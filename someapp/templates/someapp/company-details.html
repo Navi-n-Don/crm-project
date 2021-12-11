@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    Company Details
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-9 mx-auto col-md-12 col-lg-12">
+                <h1 class="my-5">{{ company.title }}</h1>
+                <small class="card-title mb-4 font-italic">The contact person: {{ company.contact_person }}</small>
+                <img src="{% static 'img/heads/first_company.jpg' %}" width="170" class="img-thumbnail position-absolute img-head" alt="The contact person">
+                <div class="clearfix"></div>
+                <p class="card-text">{{ company.description|safe }}</p>
+                <p class="text-uppercase my-5 text-underline">Contact Details:</p>
+                <dl class="row ml-5">
+                    <dt class="col-sm-3 mb-3">Address:</dt>
+                        <dd class="col-sm-9">{{ company.address }}</dd>
+                    <dt class="col-sm-3 mb-3">Phone numbers:</dt>
+                        <dd class="col-sm-9">
+                            <ul class="list-unstyled">
+                                {% for number in phones.all %}
+                                {% if number.company_id == company.id %}
+                                <li>{{ number }}</li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </dd>
+                    <dt class="col-sm-3 mb-3">Email addresses:</dt>
+                        <dd class="col-sm-9">
+                            <ul class="list-unstyled">
+                                {% for email in emails.all %}
+                                {% if email.company_id == company.id %}
+                                <li>{{ email }}</li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </dd>
+                </dl>
+                <div class="border-bottom text-right fs-_8">created: {{ company.date_joined|date:"d.m.Y" }} in {{ company.date_joined|time:"H:i" }} [<span class="text-danger">last changed: {{ company.changing_date|date:"d.m.Y" }} in {{ company.changing_date|time:"H:i" }}</span>]</div>
+                <h3 class="my-5 text-center">Projects</h3>
+                <ol>
+                    <li>
+                        <div class="card border-secondary mb-3 ml-3">
+                            <div class="card-header text-right">status</div>
+                            <div class="card-body text-secondary">
+                                <h5 class="card-title">Name of a project</h5>
+                                <p class="card-text">Description of the project</p>
+                            </div>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

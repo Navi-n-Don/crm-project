@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    Company List
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-9 mx-auto col-md-12 col-lg-12">
+                <h1 class="my-5 text-center">Company List</h1>
+                {% for company in companies %}
+                <div class="card my-2">
+                    <details>
+                        <summary class="card-header">{{ company.title }} <span class="text-muted">(The contact person: {{ company.contact_person }})</span><cite class="text-warning float-right" style="font-size: 10pt;">last changed: {{ company.changing_date|date:"d.m.Y" }} in {{ company.changing_date|time:"H:i" }}</cite></summary>
+                        <div class="card-body">
+                            <h4 class="card-title"><em>The contact person: {{ company.contact_person }}</em><cite class="text-muted float-right" style="font-size: 10pt;">{{ company.date_joined|date:"d.m.Y" }} in {{ company.date_joined|time:"H:i" }}</cite></h4>
+                            <p class="card-text">{{ company.description|safe }}</p>
+                            <br>
+                            <div class="float-right">
+                                <p class="card-text"><small class="text-muted">Address: {{ company.address }}</small></p>
+                                    <small class="text-muted">
+                                        <ul class="list-unstyled">Contact numbers:
+                                            {% for number in phones.all %}
+                                            {% if number.company_id == company.id %}
+                                            <li class="text-right">{{ number }}</li>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    </small>
+                                    <small class="text-muted">
+                                        <span class="d-inline-block align-text-top">E-mail:</span>
+                                        <ul class="mx-1 list-unstyled d-inline-block align-text-top">
+                                            {% for email in emails.all %}
+                                            {% if email.company_id == company.id %}
+                                            <li>{{ email }}</li>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    </small>
+                                </p>
+                            </div>
+                            <div class="clearfix"></div>
+                            <br>
+                            <a href="{{ company.get_absolute_url }}" class="btn btn-outline-info px-5">Details</a>
+                        </div>
+                    </details>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+
+<!--            <nav aria-label="Page navigation example">-->
+<!--                <ul class="pagination">-->
+<!--                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>-->
+<!--                    <li class="page-item"><a class="page-link" href="#">1</a></li>-->
+<!--                    <li class="page-item"><a class="page-link" href="#">Next</a></li>-->
+<!--                </ul>-->
+<!--            </nav>-->
+
+        </div>
+    </div>
+
+{% endblock %}
