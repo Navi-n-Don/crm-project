@@ -44,5 +44,5 @@ class ProjectAdmin(admin.ModelAdmin):
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
     list_display = (
-        'title', 'contact_person', 'description', 'address', 'created_date', 'updated_date',)
+        'title', 'slug', 'contact_person', 'description', 'address', 'created_date', 'updated_date',)
     inlines = [PhoneInline, EmailInline, ProjectInline]

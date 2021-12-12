@@ -6,6 +6,22 @@
     Company List
 {% endblock %}
 
+{% block menu_1 %}
+    <li class="nav-item active">
+        <a class="nav-link disabled">Company List <span class="sr-only">(current)</span></a>
+    </li>
+    <li class="nav-item ml-5">
+        <a class="nav-link" href="{% url 'projects' %}">All Projects</a>
+    </li>
+{% endblock %}
+
+{% block menu_2 %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'cabinet' %}">Personal Room</a>
+    </li>
+{% endblock %}
+
+
 {% block content %}
 
     <div class="container">
@@ -15,9 +31,9 @@
                 {% for company in companies %}
                 <div class="card my-2">
                     <details>
-                        <summary class="card-header">{{ company.title }} <span class="text-muted">(The contact person: {{ company.contact_person }})</span><cite class="text-warning float-right" style="font-size: 10pt;">last changed: {{ company.changing_date|date:"d.m.Y" }} in {{ company.changing_date|time:"H:i" }}</cite></summary>
+                        <summary class="card-header">{{ company.title }} <span class="text-muted">(The contact person: {{ company.contact_person }})</span><cite class="text-warning float-right" style="font-size: 10pt;">last changed: {{ company.updated_date|date:"d.m.Y" }} in {{ company.updated_date|time:"H:i" }}</cite></summary>
                         <div class="card-body">
-                            <h4 class="card-title"><em>The contact person: {{ company.contact_person }}</em><cite class="text-muted float-right" style="font-size: 10pt;">{{ company.date_joined|date:"d.m.Y" }} in {{ company.date_joined|time:"H:i" }}</cite></h4>
+                            <h4 class="card-title"><em>The contact person: {{ company.contact_person }}</em><cite class="text-muted float-right" style="font-size: 10pt;">{{ company.created_date|date:"d.m.Y" }} in {{ company.created_date|time:"H:i" }}</cite></h4>
                             <p class="card-text">{{ company.description|safe }}</p>
                             <br>
                             <div class="float-right">
@@ -52,31 +68,33 @@
                 {% endfor %}
             </div>
 
-            <div class="pagination">
-                <span class="step-links">
+            <nav class="container mt-5">
+                <ul class="pagination">
                     {% if page_obj.has_previous %}
-                        <a href="?page=1">&laquo; first</a>
-                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                    {% else %}
+                    <li class="page-item disabled"><a class="page-link">First</a></li>
+                    <li class="page-item disabled"><a class="page-link">Previous</a></li>
                     {% endif %}
 
-                    <span class="current">
-                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                    </span>
+                    {% for page in page_obj.paginator.page_range %}
+                    {% if page_obj.number == page %}
+                    <li class="page-item disabled"><a class="page-link">{{ page }}</a></li>
+                    {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                    {% endif %}
+                    {% endfor %}
 
                     {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}">next</a>
-                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
+                    {% else %}
+                    <li class="page-item disabled"><a class="page-link">Next</a></li>
+                    <li class="page-item disabled"><a class="page-link">Last</a></li>
                     {% endif %}
-                </span>
-            </div>
-
-<!--            <nav aria-label="Page navigation example">-->
-<!--                <ul class="pagination">-->
-<!--                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>-->
-<!--                    <li class="page-item"><a class="page-link" href="#">1</a></li>-->
-<!--                    <li class="page-item"><a class="page-link" href="#">Next</a></li>-->
-<!--                </ul>-->
-<!--            </nav>-->
+                </ul>
+            </nav>
 
         </div>
     </div>

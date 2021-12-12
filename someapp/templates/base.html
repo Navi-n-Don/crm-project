@@ -13,6 +13,26 @@
 </head>
 
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<!--        <a class="navbar-brand" href="#">Navbar</a>-->
+<!--        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--            <span class="navbar-toggler-icon"></span>-->
+<!--        </button>-->
+        <div class="container collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto text-uppercase">
+                {% block menu_1 %}{% endblock %}
+            </ul>
+
+            <form class="form-inline my-2 my-lg-0">
+                <ul class="navbar-nav mr-auto text-uppercase">
+                    {% block menu_2 %}{% endblock %}
+                    <li class="nav-item ml-5">
+                        <a class="nav-link" href="#"><span class="material-icons">logout</span></a>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </nav>
 
     {% block content %}
     {% endblock %}

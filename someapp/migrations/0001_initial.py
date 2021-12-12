@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
             name='Email',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email_address', models.CharField(blank=True, max_length=250, null=True)),
+                ('email_address', models.EmailField(max_length=250, blank=False, unique=True)),
                 ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='someapp.company')),
             ],
         ),

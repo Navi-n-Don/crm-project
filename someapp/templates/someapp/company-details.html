@@ -6,6 +6,21 @@
     Company Details
 {% endblock %}
 
+{% block menu_1 %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'companies' %}">Company List</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'projects' %}">All Projects</a>
+    </li>
+{% endblock %}
+
+{% block menu_2 %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'cabinet' %}">Personal Room</a>
+    </li>
+{% endblock %}
+
 {% block content %}
 
     <div class="container">
@@ -41,7 +56,7 @@
                             </ul>
                         </dd>
                 </dl>
-                <div class="border-bottom text-right fs-_8">created: {{ company.date_joined|date:"d.m.Y" }} in {{ company.date_joined|time:"H:i" }} [<span class="text-danger">last changed: {{ company.changing_date|date:"d.m.Y" }} in {{ company.changing_date|time:"H:i" }}</span>]</div>
+                <div class="border-bottom text-right fs-_8">created: {{ company.created_date|date:"d.m.Y" }} in {{ company.created_date|time:"H:i" }} [<span class="text-danger">last changed: {{ company.updated_date|date:"d.m.Y" }} in {{ company.updated_date|time:"H:i" }}</span>]</div>
                 <h3 class="my-5 text-center">Projects</h3>
                 <ol>
                     <li>

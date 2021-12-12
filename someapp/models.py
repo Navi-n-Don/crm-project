@@ -49,7 +49,7 @@ class Email(models.Model):
     """
     Model representing a e-mail address
     """
-    email_address = models.CharField(max_length=250, null=True, blank=True)
+    email_address = models.EmailField(max_length=250, blank=False, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -78,3 +78,22 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Cabinet(models.Model):
+    """
+    Model representing a personal room
+    """
+    first_name = models.CharField(max_length=250, null=True, blank=True)
+    last_name = models.CharField(max_length=250, null=True, blank=True)
+    personal_email = models.EmailField(max_length=250, blank=False, unique=True)
+    personal_pass = models.CharField(max_length=250, null=False)
+    personal_image = models.ImageField(upload_to='users', blank=True)
+
+    class Meta:
+        ordering = ('last_name',)
+        verbose_name = 'cabinet'
+        verbose_name_plural = 'cabinets'
+
+    def __str__(self):
+        return f'{self.last_name} {self.first_name}'
