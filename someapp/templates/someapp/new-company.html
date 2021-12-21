@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block addjs %}
+<script src="{% static 'js/addcontacts.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+    Create New Company
+{% endblock %}
+
+
+{% block menu_1 %}
+    <li class="nav-item">
+        <a class="nav-link text-primary" href="{% url 'companies' %}">Company List</a>
+    </li>
+    <li class="nav-item ml-5">
+        <a class="nav-link text-primary" href="{% url 'projects' %}">All Projects</a>
+    </li>
+{% endblock %}
+
+{% block menu_2 %}
+    <li class="nav-item">
+        <a class="nav-link text-primary" href="{% url 'cabinet' %}">Personal Room</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<noscript class="d-block text-center bg-warning text-light py-3">This page requires Javascript to work correctly.</noscript>
+    <main class="container">
+        <div class="row">
+            <div class="col-6 mx-auto col-md-6 col-lg-6">
+                <h1 class="my-5 text-center">Create New Company</h1>
+                <form action="" method="post" id="form_company">
+                    {% csrf_token %}
+                    <table>
+                    {{ form.media }}
+                    {{ form|crispy }}
+                    </table>
+                    <hr>
+                    {{ phone.management_form }}
+                    <div id="phone_set" class="mt-3">
+                        <div id="initial_phone">
+                            {% for number in phone.forms %}
+                                <ul class='phone-number'>
+                                    {{ number.as_ul }}
+                                </ul>
+                            {% endfor %}
+                        </div>
+                        <div id="additional_phone"></div>
+
+                        <a class="btn btn-link" id="add_phone" onclick="addPhone();"> + Add </a>
+
+                        <div id="empty_phone" class="d-none">
+                            <ul class='phone-number'>
+                                {{ phone.empty_form.as_ul }}
+                            </ul>
+                        </div>
+                        <span id="extra_phone" class="d-none">{{ phone.extra }}</span>
+                    </div>
+                    <hr>
+
+                    {{ email.management_form }}
+                    <div id="email_set" class="mt-3">
+                        <div id="initial_email">
+                            {% for mail in email.forms %}
+                                <ul class='email'>
+                                    {{ mail.as_ul }}
+                                </ul>
+                            {% endfor %}
+                        </div>
+                        <div id="additional_email"></div>
+
+                        <a class="btn btn-link" id="add_email" onclick="addEmail();"> + Add </a>
+
+                        <div id="empty_email" class="d-none">
+                            <ul class='email'>
+                                {{ email.empty_form.as_ul }}
+                            </ul>
+                        </div>
+                        <span id="extra_email" class="d-none">{{ email.extra }}</span>
+                    </div>
+
+                    <input type="submit" value="Submit" class="btn-success">
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}

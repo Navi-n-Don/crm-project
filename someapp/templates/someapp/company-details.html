@@ -3,33 +3,32 @@
 {% load static %}
 
 {% block title %}
-    Company Details
+    {{ company.title }}
 {% endblock %}
 
 {% block menu_1 %}
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'companies' %}">Company List</a>
+        <a class="nav-link text-primary" href="{% url 'companies' %}">Company List</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'projects' %}">All Projects</a>
+    <li class="nav-item ml-5">
+        <a class="nav-link text-primary" href="{% url 'projects' %}">All Projects</a>
     </li>
 {% endblock %}
 
 {% block menu_2 %}
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'cabinet' %}">Personal Room</a>
+        <a class="nav-link text-primary" href="{% url 'cabinet' %}">Personal Room</a>
     </li>
 {% endblock %}
 
 {% block content %}
 
-    <div class="container">
+    <main class="container">
         <div class="row">
             <div class="col-9 mx-auto col-md-12 col-lg-12">
                 <h1 class="my-5">{{ company.title }}</h1>
                 <small class="card-title mb-4 font-italic">The contact person: {{ company.contact_person }}</small>
-                <img src="{% static 'img/heads/first_company.jpg' %}" width="170" class="img-thumbnail position-absolute img-head" alt="The contact person">
-                <div class="clearfix"></div>
+                <img src="" alt="">
                 <p class="card-text">{{ company.description|safe }}</p>
                 <p class="text-uppercase my-5 text-underline">Contact Details:</p>
                 <dl class="row ml-5">
@@ -40,7 +39,7 @@
                             <ul class="list-unstyled">
                                 {% for number in phones.all %}
                                 {% if number.company_id == company.id %}
-                                <li>{{ number }}</li>
+                                <li>+38-{{ number }}</li>
                                 {% endif %}
                                 {% endfor %}
                             </ul>
@@ -57,20 +56,43 @@
                         </dd>
                 </dl>
                 <div class="border-bottom text-right fs-_8">created: {{ company.created_date|date:"d.m.Y" }} in {{ company.created_date|time:"H:i" }} [<span class="text-danger">last changed: {{ company.updated_date|date:"d.m.Y" }} in {{ company.updated_date|time:"H:i" }}</span>]</div>
+                {% if projects %}
                 <h3 class="my-5 text-center">Projects</h3>
                 <ol>
                     <li>
+                        {% now 'Y-m-d' as today %}
+                        {% for project in projects.all %}
+                        {% if project.begin|date:"Y-m-d" > today %}
                         <div class="card border-secondary mb-3 ml-3">
-                            <div class="card-header text-right">status</div>
+                            <div class="card-header text-right text-secondary">Will be started {{project.begin|date:"d.m.y"}}</div>
+                            {% elif project.end|date:"Y-m-d" < today %}
+                        <div class="card border-success mb-3 ml-3">
+                            <div class="card-header text-right text-success">Completed</div>
+                            {% else %}
+                        <div class="card border-info mb-3 ml-3">
+                            <div class="card-header text-right text-info">In Progress</div>
+                            {% endif %}
                             <div class="card-body text-secondary">
-                                <h5 class="card-title">Name of a project</h5>
-                                <p class="card-text">Description of the project</p>
+                                <h5 class="card-title">{{project.title}}</h5>
+                                <p class="card-text">{{project.description|safe}}</p>
                             </div>
+                            <h4 class="card-header"><span class="text-secondary font-italic">Price of project:</span> ${{project.price}}</h4>
+                            {% endfor %}
                         </div>
                     </li>
                 </ol>
+                {% else %}
+                <div class="position-relative py-5 my-4">
+                    <h3 class="text-secondary get-center">
+                        There are no projects available
+                        {% if perms.someapp.add_project %}
+                        <small class="d-block text-center mt-3"><a href="{% url 'new-project' %}"> + add a new project</a></small>
+                        {% endif %}
+                    </h3>
+                </div>
+                {% endif %}
             </div>
         </div>
-    </div>
+    </main>
 
 {% endblock %}

@@ -3,10 +3,10 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views import View
-
 from main import settings
 from users.models import Person
-from .forms import PhoneInlineFormSet, EmailInlineFormSet
+from .filters import CompanyFilter, ProjectFilter
+from .forms import PhoneInlineFormSet, EmailInlineFormSet, ProjectForm
 from .models import Company, Phone, Email, Project
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView, FormView
 
@@ -78,8 +78,8 @@ class CompanyDetailView(DetailView):
 class CompanyCreate(PermissionRequiredMixin, CreateView):
     model = Company
     fields = ('title', 'contact_person', 'description', 'address',)
-    permission_required = 'app.add_company'
-    template_name = "new-company.html"
+    permission_required = 'someapp.add_company'
+    template_name = "someapp/new-company.html"
 
     def get_context_data(self, **kwargs):
         context = super(CompanyCreate, self).get_context_data(**kwargs)
@@ -142,8 +142,8 @@ class ProjectDetailView(DetailView):
 class ProjectCreate(PermissionRequiredMixin, CreateView):
     model = Project
     form_class = ProjectForm
-    permission_required = 'app.add_project'
-    template_name = "new-project.html"
+    permission_required = 'someapp.add_project'
+    template_name = "someapp/new-project.html"
 
     def get_context_data(self, **kwargs):
         context = super(ProjectCreate, self).get_context_data(**kwargs)

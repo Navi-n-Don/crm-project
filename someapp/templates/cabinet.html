@@ -8,28 +8,49 @@
 
 {% block menu_1 %}
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'companies' %}">Company List</a>
+        <a class="nav-link text-primary" href="{% url 'companies' %}">Company List</a>
     </li>
     <li class="nav-item ml-5">
-        <a class="nav-link" href="{% url 'projects' %}">All Projects</a>
+        <a class="nav-link text-primary" href="{% url 'projects' %}">All Projects</a>
     </li>
 {% endblock %}
 
 {% block menu_2 %}
     <li class="nav-item active">
-        <a class="nav-link disabled">Personal Room <span class="sr-only">(current)</span></a>
+        <a class="nav-link disabled text-muted">Personal Room <span class="sr-only">(current)</span></a>
     </li>
 {% endblock %}
 
-
 {% block content %}
 
-    <div class="container">
+    <main class="container">
         <div class="row">
-
-
-
+            <div class="col-6 mx-auto col-md-6 col-lg-6">
+                <h1 class="my-5 text-center">Personal Room <a class="ml-5" href=""><span class="material-icons">edit</span></a></h1>
+                <dl class="row ml-5">
+                    <dt class="col-sm-5 mb-3">Username:</dt>
+                        <dd class="col-sm-7">{{ user.username }}</dd>
+                    <dt class="col-sm-5 mb-3">First Name:</dt>
+                        <dd class="col-sm-7">{{ user.first_name }}</dd>
+                    <dt class="col-sm-5 mb-3">Last Name:</dt>
+                        <dd class="col-sm-7">{{ user.last_name }}</dd>
+                    <dt class="col-sm-5 mb-3">E-mail:</dt>
+                        <dd class="col-sm-7">{{ user.email }}</dd>
+                    <dt class="col-sm-5 mb-3">Status:</dt>
+                        {% if perms.app.add_company %}
+                        <dd class="col-sm-7">Manager</dd>
+                        {% else %}
+                        <dd class="col-sm-7">User</dd>
+                        {% endif %}
+                    <hr>
+                    <dt class="col-sm-5 mb-3">Access Grant Date:</dt>
+                        <dd class="col-sm-7">{{ user.date_joined }}</dd>
+                    <dt class="col-sm-5 mb-3">Last Visit:</dt>
+                        <dd class="col-sm-7">{{ user.last_login }}</dd>
+                </dl>
+            </div>
+            <img class="user-img" src="{{ user.image.url }}" alt="{{ user.image.name|slice:':-4' }}">
         </div>
-    </div>
+    </main>
 
 {% endblock %}

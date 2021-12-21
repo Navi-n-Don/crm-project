@@ -2,9 +2,12 @@
 
 {% load static %}
 
+{% load crispy_forms_tags %}
+
 {% block title %}
-    {{ project.title }}
+    Create New Company
 {% endblock %}
+
 
 {% block menu_1 %}
     <li class="nav-item">
@@ -23,11 +26,22 @@
 
 {% block content %}
 
+<noscript class="d-block text-center bg-warning text-light py-3">This page requires Javascript to work correctly.</noscript>
     <main class="container">
         <div class="row">
             <div class="col-6 mx-auto col-md-6 col-lg-6">
-                <h1 class="my-5 text-center">{{ project.title }}</h1>
-                
+                <h1 class="my-5 text-center">Create New Project</h1>
+                <form action="" method="post" id="form_company">
+                    {% csrf_token %}
+                    <table>
+                    {{ form.media }}
+                    {{ form|crispy }}
+                    </table>
+                    <hr>
+
+                    <input type="submit" value="Submit" class="btn-success">
+                    <div class="clearfix"></div>
+                </form>
             </div>
         </div>
     </main>

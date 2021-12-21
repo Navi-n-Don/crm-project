@@ -3,6 +3,8 @@
 
 {% load static %}
 
+{% load crispy_forms_tags %}
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -12,37 +14,27 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.js"></script>
-    {% block addjs %}{% endblock %}
-    <title>{% block title %}{% endblock %}</title>
+    <title>Login</title>
 </head>
 
 <body>
+
     <div class="wrapper">
-
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto text-uppercase">
-                    {% block menu_1 %}{% endblock %}
-                </ul>
-
-                <form class="form-inline my-2 my-lg-0">
-                    <ul class="navbar-nav mr-auto text-uppercase">
-                        {% block menu_2 %}{% endblock %}
-                        <li class="nav-item ml-5">
-                            <a class="nav-link text-primary" href="{% url 'logout' %}"><span class="material-icons">logout</span></a>
-                        </li>
-                    </ul>
-                </form>
+        <div class="container"><br>
+            <h1 class="text-center mt-5">Login</h1>
+            <div class="row">
+                <div class="col-12 col-sm-12 col-lg-6 bg-light mx-auto mt-5"><br>
+                    <form method="post">
+                        {% csrf_token %}
+                        <p>{{ form|crispy }}</p>
+                        <button type="submit" class="btn btn-primary d-block mx-auto mt-4 py-2 px-5">Log In</button>
+                    </form>
+                    <br>
+                </div>
             </div>
-        </nav>
-
-        {% block content %}
-        {% endblock %}
-
-        <footer class="bg-dark footer">
-            <small class="text-center d-flex justify-content-center align-items-center text-light h-100">Copyright 2021</small>
-        </footer>
+            <br>
+        </div>
+        <br>
     </div>
 
   </body>
