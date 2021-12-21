@@ -12,3 +12,11 @@ class CompanyForm(forms.ModelForm):
 PhoneInlineFormSet = inlineformset_factory(Company, Phone, fields=('phone_number',), extra=1, max_num=5)
 EmailInlineFormSet = inlineformset_factory(Company, Email, fields=('email_address',), extra=1, max_num=5)
 
+
+class ProjectForm(forms.ModelForm):
+    company = forms.CharField(disabled=True)
+    creator = forms.CharField(disabled=True)
+
+    class Meta:
+        model = Project
+        fields = ('title', 'company', 'description', 'creator', 'begin', 'end', 'price',)
