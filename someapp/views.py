@@ -1,4 +1,4 @@
-from .models import Company, Phone, Email, Project, Cabinet
+from .models import Company, Phone, Email, Project
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView, FormView
 
 
@@ -12,7 +12,12 @@ class CompanyListView(ListView):
         context = super().get_context_data(**kwargs)
         context['phones'] = Phone.objects.all()
         context['emails'] = Email.objects.all()
+        context['sort_name'] = self.get_ordering()
         return context
+
+    def get_ordering(self):
+        ordering = self.request.GET.get('sorting', 'title')
+        return ordering if ordering in ('title', 'created_date', '-title', '-created_date') else 'title'
 
 
 class CompanyDetailView(DetailView):
@@ -38,9 +43,3 @@ class ProjectDetailView(DetailView):
     model = Project
     template_name = "someapp/project-details.html"
     context_object_name = "project"
-
-
-class CabinetListView(ListView):
-    model = Cabinet
-    template_name = "cabinet.html"
-    context_object_name = "cabinet"

@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+from django.urls import reverse_lazy
+from .ckesettings import CKEDITOR_CONFIGS, CKEDITOR_UPLOAD_PATH
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,20 +34,35 @@ ALLOWED_HOSTS = [
     '127.0.0.1'
 ]
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 # Application definition
 
-INSTALLED_APPS = [
+DEFAULT_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'someapp',
+]
+
+THIRD_PARTY_APPS = [
     'ckeditor',
     'ckeditor_uploader',
+    'crispy_forms',
+    'django_filters',
+    'debug_toolbar',
 ]
+
+LOCAL_APPS = [
+    'users.apps.UsersConfig',
+    'someapp.apps.SomeappConfig',
+]
+
+INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -55,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'main.urls'
@@ -137,28 +155,13 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
 
-CKEDITOR_UPLOAD_PATH = 'upload/'
-
-CKEDITOR_CONFIGS = {
-    'default': {},
-    'comment_ckeditor': {
-        'toolbar': 'custom',
-        'toolbar_custom': [
-            ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript'],
-            ["TextColor", "BGColor", 'RemoveFormat'],
-            ['NumberedList', 'BulletedList'],
-            ['Link', 'Unlink'],
-            ["Smiley", "SpecialChar", 'Blockquote'],
-        ],
-        'width': 'auto',
-        'height': '180',
-        'tabSpaces': 4,
-        'removePlugins': 'elementspath',
-        'resize_enabled': False,
-    }
-}
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = reverse_lazy('login')
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+AUTH_USER_MODEL = 'users.Person'

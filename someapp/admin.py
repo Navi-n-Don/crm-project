@@ -21,7 +21,7 @@ class EmailInline(admin.TabularInline):
 
 class ProjectInline(admin.TabularInline):
     model = Project
-    fields = ('title', 'slug', 'description', 'price', 'begin', 'end',)
+    fields = ('title', 'description', 'price', 'begin', 'end',)
     can_delete = False
     extra = 1
 
@@ -38,11 +38,13 @@ class EmailAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'slug', 'description', 'price', 'begin', 'end',)
+    readonly_fields = ('slug',)
+    list_display = ('title', 'description', 'price', 'begin', 'end',)
 
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
+    readonly_fields = ('slug',)
     list_display = (
-        'title', 'slug', 'contact_person', 'description', 'address', 'created_date', 'updated_date',)
+        'title', 'contact_person', 'description', 'address', 'created_date', 'updated_date',)
     inlines = [PhoneInline, EmailInline, ProjectInline]
