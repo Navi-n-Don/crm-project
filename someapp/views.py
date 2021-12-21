@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.http import request
 from django.shortcuts import render, redirect
 from django.views import View
 from main import settings
@@ -148,6 +149,10 @@ class ProjectCreate(PermissionRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super(ProjectCreate, self).get_context_data(**kwargs)
         return context
+
+    # def form_valid(self, form):
+    #     form.instance.user = self.request.user
+    #     return super(ProjectCreate, self).form_valid(form)
 
 
 class PersonView(LoginRequiredMixin, ListView):

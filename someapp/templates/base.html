@@ -26,6 +26,12 @@
                     {% block menu_1 %}{% endblock %}
                 </ul>
 
+                <ul class="navbar-nav mr-auto">
+                     <li class="nav-item active">
+                         <a class="nav-link text-muted">{{ user.username }}</a>
+                     </li>
+                </ul>
+
                 <form class="form-inline my-2 my-lg-0">
                     <ul class="navbar-nav mr-auto text-uppercase">
                         {% block menu_2 %}{% endblock %}

@@ -1,5 +1,7 @@
 from django import forms
 from django.forms import inlineformset_factory
+
+from main import settings
 from .models import Company, Email, Phone, Project
 
 
@@ -18,9 +20,6 @@ class DateInput(forms.DateInput):
 
 
 class ProjectForm(forms.ModelForm):
-    company = forms.CharField(disabled=True)
-    creator = forms.CharField(disabled=True)
-
     class Meta:
         model = Project
         fields = ('title', 'company', 'description', 'creator', 'begin', 'end', 'price',)

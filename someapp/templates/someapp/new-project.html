@@ -29,6 +29,7 @@
 <noscript class="d-block text-center bg-warning text-light py-3">This page requires Javascript to work correctly.</noscript>
     <main class="container">
         <div class="row">
+            {% if perms.someapp.add_project %}
             <div class="col-6 mx-auto col-md-6 col-lg-6">
                 <h1 class="my-5 text-center">Create New Project</h1>
                 <form action="" method="post" id="form_company">
@@ -43,6 +44,7 @@
                     <div class="clearfix"></div>
                 </form>
             </div>
+            {% endif %}
         </div>
     </main>
 
