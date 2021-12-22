@@ -150,9 +150,19 @@ class ProjectCreate(PermissionRequiredMixin, CreateView):
         context = super(ProjectCreate, self).get_context_data(**kwargs)
         return context
 
-    # def form_valid(self, form):
-    #     form.instance.user = self.request.user
-    #     return super(ProjectCreate, self).form_valid(form)
+    def get_form_kwargs(self):
+        kwargs = super(ProjectCreate, self).get_form_kwargs()
+        if kwargs['instance'] is None:
+            kwargs['instance'] = Project()
+        kwargs['instance'].creator = self.request.user
+        kwargs['instance'].company = Company.objects.filter(slug=self.kwargs.get('slug'))[0]
+        return kwargs
+
+    def get_form_class(self):
+        modelform = super().get_form_class()
+        modelform.base_fields['creator'].limit_choices_to = {'username': self.request.user}
+        modelform.base_fields['company'].limit_choices_to = {'title': Company.objects.filter(slug=self.kwargs.get('slug'))[0]}
+        return modelform
 
 
 class PersonView(LoginRequiredMixin, ListView):

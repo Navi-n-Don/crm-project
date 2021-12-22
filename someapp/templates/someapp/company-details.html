@@ -73,8 +73,8 @@
                             <div class="card-header text-right text-info">In Progress</div>
                             {% endif %}
                             <div class="card-body text-secondary">
-                                <h5 class="card-title">{{project.title}}</h5>
-                                <p class="card-text">{{project.description|safe}}</p>
+                                <h5 class="card-title"><a href="{{ project.get_absolute_url }}">{{ project.title }}</a></h5>
+                                <p class="card-text">{{ project.description|safe }}</p>
                             </div>
                             <h4 class="card-header"><span class="text-secondary font-italic">Price of project:</span> ${{project.price}}</h4>
                         {% endfor %}

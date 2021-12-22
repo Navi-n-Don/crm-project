@@ -25,10 +25,41 @@
 
     <main class="container">
         <div class="row">
-            <div class="col-6 mx-auto col-md-6 col-lg-6">
+            {% if project %}
+            <div class="col-10 mx-auto col-md-10 col-lg-10">
                 <h1 class="my-5 text-center">{{ project.title }}</h1>
-                
+                <ul class="list-unstyled">
+                    <li>
+                        {% now 'Y-m-d' as today %}
+                            {% if project.begin|date:"Y-m-d" > today %}
+                        <div class="card border-secondary mb-3 ml-3">
+                            <div class="card-header text-right text-secondary">Will be started {{project.begin|date:"d.m.y"}}</div>
+                            {% elif project.end|date:"Y-m-d" < today %}
+                        <div class="card border-success mb-3 ml-3">
+                            <div class="card-header text-right text-success">Completed</div>
+                            {% else %}
+                        <div class="card border-info mb-3 ml-3">
+                            <div class="card-header text-right text-info">In Progress</div>
+                            {% endif %}
+                            <div class="card-body text-secondary">
+                                <h5 class="card-title">{{project.title}}</h5>
+                                <p class="card-text">{{project.description|safe}}</p>
+                            </div>
+                            <h4 class="card-header"><span class="text-secondary font-italic">Price of project:</span> ${{project.price}}</h4>
+                        </div>
+                    </li>
+                </ul>
             </div>
+            {% else %}
+            <div class="position-relative py-5 my-4">
+                <h3 class="text-secondary get-center">
+                    There are no interaction available
+                    {% if perms.someapp.add_project %}
+                    <small class="d-block text-center mt-3"><a href=""> + add a new interaction</a></small>
+                    {% endif %}
+                </h3>
+            </div>
+            {% endif %}
         </div>
     </main>
 

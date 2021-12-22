@@ -1,7 +1,5 @@
 from django import forms
 from django.forms import inlineformset_factory
-
-from main import settings
 from .models import Company, Email, Phone, Project
 
 

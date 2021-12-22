@@ -105,8 +105,8 @@ class Project(models.Model):
     """
     title = models.CharField(max_length=250, unique=True)
     slug = models.SlugField()
-    company = models.ForeignKey(Company, on_delete=models.DO_NOTHING)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="responsible")
+    company = models.ForeignKey(Company, on_delete=models.DO_NOTHING, default='')
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="responsible", default='')
     description = RichTextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     begin = models.DateField(null=True, blank=True)

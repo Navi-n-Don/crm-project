@@ -36,11 +36,11 @@
                         <dd class="col-sm-7">{{ user.last_name }}</dd>
                     <dt class="col-sm-5 mb-3">E-mail:</dt>
                         <dd class="col-sm-7">{{ user.email }}</dd>
-                    <dt class="col-sm-5 mb-3">Status:</dt>
-                        {% if perms.app.add_company %}
-                        <dd class="col-sm-7">Manager</dd>
+                    <dt class="col-sm-5 mb-3">Group:</dt>
+                        {% if user.groups.all.0 is None %}
+                        <dd class="col-sm-7">Administrators</dd>
                         {% else %}
-                        <dd class="col-sm-7">User</dd>
+                        <dd class="col-sm-7">{{ user.groups.all.0.name }}</dd>
                         {% endif %}
                     <hr>
                     <dt class="col-sm-5 mb-3">Access Grant Date:</dt>
