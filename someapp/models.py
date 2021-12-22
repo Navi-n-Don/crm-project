@@ -1,16 +1,15 @@
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator, EmailValidator
+from django.core.validators import RegexValidator, EmailValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.urls import reverse
 from ckeditor.fields import RichTextField
 from django.utils.translation import gettext_lazy as _
 from slugify import slugify
 from main import settings
+from someapp.choices import APPEALS
 
 
 # Create your models here.
-
-
 class Company(models.Model):
     """
     Model representing a company
@@ -106,7 +105,8 @@ class Project(models.Model):
     title = models.CharField(max_length=250, unique=True)
     slug = models.SlugField()
     company = models.ForeignKey(Company, on_delete=models.DO_NOTHING, default='')
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="responsible", default='')
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="responsible",
+                                default='')
     description = RichTextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     begin = models.DateField(null=True, blank=True)
@@ -130,7 +130,26 @@ class Project(models.Model):
     def get_absolute_url(self):
         return reverse('project-details', kwargs={'slug': self.slug})
 
-# class Interaction(models.Model):
-#     """
-#     Model representing a interactions between company and manager
-#     """
+
+class Interaction(models.Model):
+    """
+    Model representing a interactions between company and manager
+    """
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    appeals = models.CharField(max_length=20, choices=APPEALS, default='')
+    manager = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    description = RichTextField()
+    rating = models.SmallIntegerField(validators=[MinValueValidator(-5), MaxValueValidator(5)])
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-created_date', '-rating',)
+        verbose_name = 'interaction'
+        verbose_name_plural = 'interactions'
+
+    def __str__(self):
+        return self.project
+
+    def get_absolute_url(self):
+        return reverse('interaction-details', args=[str(self.id)])
