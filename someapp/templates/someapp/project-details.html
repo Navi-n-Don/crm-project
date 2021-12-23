@@ -27,39 +27,74 @@
         <div class="row">
             {% if project %}
             <div class="col-10 mx-auto col-md-10 col-lg-10">
-                <h1 class="my-5 text-center">{{ project.title }}</h1>
-                <ul class="list-unstyled">
+                <h1 class="my-5 position-relative">{{ project.0.title }}
+                    {% if user.username|cut:" " == project.0.creator|cut:" " %}
+                    <a class="ml-3" href="{% url 'update-project' company_slug project.0.slug %}">
+                        <span class="material-icons">edit</span>
+                    </a>
+                    {% endif %}
+                    <small class="status-project {{project.0.days_to.1}}">{{project.0.days_to.0}}</small>
+                    {% if user.username == Admin %}
+<!--                    {% now 'Y-m-d' as today %}-->
+<!--                    {% if project.0.begin|date:"Y-m-d" > today %}-->
+<!--                    <small class="status-project text-secondary">Will be started {{project.0.begin|date:"d.m.y"}}</small>-->
+<!--                    {% elif project.0.end|date:"Y-m-d" < today %}-->
+<!--                    <small class="status-project text-success">Completed</small>-->
+<!--                    {% else %}-->
+<!--                    <small class="status-project text-info">In Progress</small>-->
+<!--                    {% endif %}-->
+                    {% endif %}
+                </h1>
+                <small class="card-title mb-4 font-italic">Responsible Person: {{ project.0.creator }}</small>
+                <p class="card-text">{{ project.0.description|safe }}</p>
+                <p class="text-uppercase mt-5 text-underline">Terms:</p>
+                <dl class="row ml-5">
+                    <dt class="col-sm-3 mb-3">Begin:</dt>
+                        <dd class="col-sm-9">{{ project.0.begin|date:"d E Y" }}</dd>
+
+                    <dt class="col-sm-3 mb-3">End:</dt>
+                        <dd class="col-sm-9">{{ project.0.end|date:"d E Y" }}</dd>
+                </dl>
+                <h4 class="clearfix"><span class="text-secondary font-italic float-right">Price of project: ${{ project.0.price }}</span></h4>
+                <hr>
+            {% else %}
+                <div class="position-relative py-5 my-4">
+                    <h3 class="text-secondary get-center">
+                        There are no project available
+                        {% if perms.someapp.add_project %}
+                        <small class="d-block text-center mt-3"><a href=""> + add a new project</a></small>
+                        {% endif %}
+                    </h3>
+                </div>
+            {% endif %}
+
+                {% if interactions %}
+                <h3 class="my-5 text-center">Interactions</h3>
+                <ol>
                     <li>
-                        {% now 'Y-m-d' as today %}
-                            {% if project.begin|date:"Y-m-d" > today %}
-                        <div class="card border-secondary mb-3 ml-3">
-                            <div class="card-header text-right text-secondary">Will be started {{project.begin|date:"d.m.y"}}</div>
-                            {% elif project.end|date:"Y-m-d" < today %}
-                        <div class="card border-success mb-3 ml-3">
-                            <div class="card-header text-right text-success">Completed</div>
-                            {% else %}
+                        {% for interaction in interactions.all %}
                         <div class="card border-info mb-3 ml-3">
-                            <div class="card-header text-right text-info">In Progress</div>
-                            {% endif %}
                             <div class="card-body text-secondary">
-                                <h5 class="card-title">{{project.title}}</h5>
-                                <p class="card-text">{{project.description|safe}}</p>
+                                <h5 class="card-title"><a href=""></a></h5>
+                                <p class="card-text"></p>
+                                <small class="float-right font-italic"></small>
+                                <div class="clearfix"></div>
                             </div>
-                            <h4 class="card-header"><span class="text-secondary font-italic">Price of project:</span> ${{project.price}}</h4>
+                        {% endfor %}
                         </div>
                     </li>
-                </ul>
+                </ol>
+                {% else %}
+                <div class="position-relative py-5 my-4">
+                    <h3 class="text-secondary get-center">
+                        There are no interactions available
+                        {% if perms.someapp.add_project %}
+                        <small class="d-block text-center mt-3"><a href=""> + add a new interaction</a></small>
+                        {% endif %}
+                    </h3>
+                </div>
+                {% endif %}
             </div>
-            {% else %}
-            <div class="position-relative py-5 my-4">
-                <h3 class="text-secondary get-center">
-                    There are no interaction available
-                    {% if perms.someapp.add_project %}
-                    <small class="d-block text-center mt-3"><a href=""> + add a new interaction</a></small>
-                    {% endif %}
-                </h3>
-            </div>
-            {% endif %}
         </div>
     </main>
 

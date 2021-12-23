@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Update {{ user.username }}
+{% endblock %}
+
+{% block menu_1 %}
+    <li class="nav-item">
+        <a class="nav-link text-primary" href="{% url 'companies' %}">Company List</a>
+    </li>
+    <li class="nav-item ml-5">
+        <a class="nav-link text-primary" href="{% url 'projects' %}">All Projects</a>
+    </li>
+{% endblock %}
+
+{% block menu_2 %}
+    <li class="nav-item">
+        <a class="nav-link text-primary" href="{% url 'cabinet' %}">Personal Room</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<noscript class="d-block text-center bg-warning text-light py-3">This page requires Javascript to work correctly.</noscript>
+    <main class="container">
+        <div class="row">
+            <div class="col-9 mx-auto col-md-6 col-lg-6">
+                <h1 class="my-5 text-center" id="update">{{ user.username }}</h1>
+                <form action="" method="post" id="form_company" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.media }}
+                    <p>{{ form|crispy }}</p>
+
+                    <button type="submit" class="btn btn-success d-block mx-auto mt-4 py-2 px-5">Update</button>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}

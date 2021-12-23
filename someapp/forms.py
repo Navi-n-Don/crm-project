@@ -25,3 +25,13 @@ class ProjectForm(forms.ModelForm):
             'begin': DateInput(),
             'end': DateInput(),
         }
+
+
+class ProjectUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        exclude = ('company', 'creator', 'slug', 'today_date', )
+        widgets = {
+            'begin': DateInput(),
+            'end': DateInput(),
+        }

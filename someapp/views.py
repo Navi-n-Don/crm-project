@@ -2,12 +2,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.http import request
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
 from django.views import View
 from main import settings
 from users.models import Person
 from .filters import CompanyFilter, ProjectFilter
-from .forms import PhoneInlineFormSet, EmailInlineFormSet, ProjectForm
+from .forms import PhoneInlineFormSet, EmailInlineFormSet, ProjectForm, CompanyForm, ProjectUpdateForm
 from .models import Company, Phone, Email, Project
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView, FormView
 
@@ -114,6 +115,48 @@ class CompanyCreate(PermissionRequiredMixin, CreateView):
                 return super().form_invalid(form)
 
 
+class CompanyUpdate(PermissionRequiredMixin, UpdateView):
+    model = Company
+    fields = ('title', 'contact_person', 'description', 'address',)
+    permission_required = 'someapp.change_company'
+    template_name_suffix = '_update'
+
+    def get_context_data(self, **kwargs):
+        context = super(CompanyUpdate, self).get_context_data(**kwargs)
+        if self.request.POST:
+            context['phone'] = PhoneInlineFormSet(self.request.POST, instance=self.object)
+            context['email'] = EmailInlineFormSet(self.request.POST, instance=self.object)
+        else:
+            context['phone'] = PhoneInlineFormSet(instance=self.object)
+            context['email'] = EmailInlineFormSet(instance=self.object)
+        return context
+
+    def form_valid(self, form):
+        """
+        Checking the validity of the form data
+        """
+        context = self.get_context_data(form=form)
+        formsets = [context['phone'], context['email']]
+        for formset in formsets:
+            print(formset[0])
+            if formset.is_valid():
+                contacts = formset.save(commit=False)
+                for contact in contacts:
+                    contact.user = self.request.user
+                    contact.company = self.object
+                    contact.save()
+            else:
+                return super().form_invalid(form)
+
+        return super().form_valid(form)
+
+
+class CompanyDelete(PermissionRequiredMixin, DeleteView):
+    model = Company
+    permission_required = 'someapp.delete_company'
+    success_url = reverse_lazy('companies')
+
+
 class ProjectListView(ListView):
     model = Project
     template_name = "someapp/projects.html"
@@ -139,6 +182,16 @@ class ProjectDetailView(DetailView):
     template_name = "someapp/project-details.html"
     context_object_name = "project"
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['company_slug'] = Company.objects.filter(slug=self.kwargs['company_slug'])[0].slug
+        return context
+
+    def get_object(self, queryset=None):
+        getObjectCompany = get_object_or_404(Company, slug=self.kwargs['company_slug'])
+        queryset = self.model.objects.filter(company_id=Company.objects.filter(title=getObjectCompany)[0].pk)
+        return queryset
+
 
 class ProjectCreate(PermissionRequiredMixin, CreateView):
     model = Project
@@ -163,6 +216,22 @@ class ProjectCreate(PermissionRequiredMixin, CreateView):
         modelform.base_fields['creator'].limit_choices_to = {'username': self.request.user}
         modelform.base_fields['company'].limit_choices_to = {'title': Company.objects.filter(slug=self.kwargs.get('slug'))[0]}
         return modelform
+
+
+class ProjectUpdate(PermissionRequiredMixin, UpdateView):
+    model = Project
+    form_class = ProjectUpdateForm
+    permission_required = 'someapp.change_company'
+    template_name_suffix = '_update'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectUpdate, self).get_context_data(**kwargs)
+        return context
+
+    def get_object(self, queryset=None):
+        getObjectCompany = get_object_or_404(Company, slug=self.kwargs['company_slug'])
+        queryset = self.model.objects.filter(company_id=Company.objects.filter(title=getObjectCompany)[0].pk).first()
+        return queryset
 
 
 class PersonView(LoginRequiredMixin, ListView):

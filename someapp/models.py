@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from slugify import slugify
 from main import settings
 from someapp.choices import APPEALS
+import datetime
 
 
 # Create your models here.
@@ -113,6 +114,7 @@ class Project(models.Model):
     end = models.DateField(null=True, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
+    today_date = datetime.date.today()
 
     class Meta:
         ordering = ('title',)
@@ -128,7 +130,20 @@ class Project(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('project-details', kwargs={'slug': self.slug})
+        return reverse('project-details', kwargs={'company_slug': slugify(str(self.company)), 'project_slug': self.slug})
+
+    @property
+    def days_to(self):
+        date_diff_start = (self.begin - self.today_date).days
+        date_diff_end = (self.end - self.today_date).days
+        if (date_diff_start >= 0) and (date_diff_start < 4):
+            return [f'left {date_diff_start} day', 'text-secondary']
+        elif date_diff_start >= 4:
+            return [f'left {date_diff_start} days', 'text-secondary']
+        elif (date_diff_start < 0) and (date_diff_end >= 0):
+            return ['In Progress', 'text-info']
+        elif (date_diff_start < 0) and (date_diff_end < 0):
+            return ['Completed', 'text-success']
 
 
 class Interaction(models.Model):
