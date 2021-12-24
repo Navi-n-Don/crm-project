@@ -1,14 +1,36 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.models import Group
 from django.http import request
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from main import settings
-from users.forms import PersonUpdateForm
+from users.forms import PersonUpdateForm, PersonCreationForm
 from users.models import Person
-from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView, FormView
+from django.views.generic import ListView, UpdateView, DeleteView, CreateView
+
+
+class SignUp(CreateView):
+    form_class = PersonCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'users/signup.html'
+
+    def form_valid(self, form):
+        if self.request.POST:
+            form = PersonCreationForm(self.request.POST)
+            if form.is_valid():
+                form.save()
+                username = form.cleaned_data.get('username')
+                signup_user = Person.objects.get(username=username)
+                user_group = Group.objects.get(name='Users')
+                user_group.user_set.add(signup_user)
+            else:
+                return super().form_invalid(form)
+        else:
+            form = PersonCreationForm()
+        return super().form_valid(form)
 
 
 class LoginView(View):
@@ -67,4 +89,8 @@ class PersonUpdate(PermissionRequiredMixin, UpdateView):
 class PersonDelete(PermissionRequiredMixin, DeleteView):
     model = Person
     permission_required = 'users.delete_person'
-    success_url = reverse_lazy('cabinet')
+    success_url = reverse_lazy('login')
+
+    def get_object(self, queryset=None):
+        queryset = self.model.objects.filter(username=self.request.user).first()
+        return queryset
