@@ -32,6 +32,9 @@
                     <a class="ml-3" href="{% url 'update-project' company_slug project.0.slug %}">
                         <span class="material-icons">edit</span>
                     </a>
+                    <a class="ml-3" href="{% url 'delete-project' company_slug project.0.slug %}">
+                        <span class="material-icons">delete</span>
+                    </a>
                     {% endif %}
                     <small class="status-project {{project.0.days_to.1}}">{{project.0.days_to.0}}</small>
                     {% if user.username == Admin %}

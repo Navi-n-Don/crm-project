@@ -32,9 +32,7 @@
                 <h1 class="my-5 text-center" id="update">{{ user.username }}</h1>
                 <form action="" method="post" id="form_company" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {{ form.media }}
                     <p>{{ form|crispy }}</p>
-
                     <button type="submit" class="btn btn-success d-block mx-auto mt-4 py-2 px-5">Update</button>
                     <div class="clearfix"></div>
                 </form>

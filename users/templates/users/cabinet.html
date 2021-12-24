@@ -26,7 +26,14 @@
     <main class="container">
         <div class="row">
             <div class="col-6 mx-auto col-md-6 col-lg-6">
-                <h1 class="my-5 text-center">Personal Room <a class="ml-5" href=""><span class="material-icons">edit</span></a></h1>
+                <h1 class="my-5 text-center">Personal Room
+                    <a class="ml-5" href="{% url 'cabinet-update' %}">
+                        <span class="material-icons">edit</span>
+                    </a>
+                    <a class="ml-5" href="{% url 'cabinet-delete' %}">
+                        <span class="material-icons">delete</span>
+                    </a>
+                </h1>
                 <dl class="row ml-5">
                     <dt class="col-sm-5 mb-3">Username:</dt>
                         <dd class="col-sm-7">{{ user.username }}</dd>
@@ -49,7 +56,7 @@
                         <dd class="col-sm-7">{{ user.last_login }}</dd>
                 </dl>
             </div>
-            <img class="user-img" src="{{ user.image.url }}" alt="{{ user.image.name|slice:':-4' }}">
+            <img class="user-img" src="{{ user.image.url }}" alt="{{ user.last_name }} {{ user.first_name }}">
         </div>
     </main>
 

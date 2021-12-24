@@ -1,44 +1,11 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.http import request
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views import View
-from main import settings
-from users.models import Person
 from .filters import CompanyFilter, ProjectFilter
 from .forms import PhoneInlineFormSet, EmailInlineFormSet, ProjectForm, CompanyForm, ProjectUpdateForm
 from .models import Company, Phone, Email, Project
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView, FormView
-
-
-class LoginView(View):
-    template_name = 'login.html'
-
-    def get(self, request, *args, **kwargs):
-        form = AuthenticationForm(data=request.POST)
-        return render(request, self.template_name, {'form': form})
-
-    def post(self, request, *args, **kwargs):
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            username = request.POST['username']
-            password = request.POST['password']
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('companies')
-            else:
-                return redirect('login')
-
-        return render(request, self.template_name, {'form': form})
-
-
-class LogoutView(View):
-    def get(self, request):
-        logout(request)
-        return redirect(settings.LOGIN_URL)
 
 
 class CompanyListView(ListView):
@@ -138,7 +105,6 @@ class CompanyUpdate(PermissionRequiredMixin, UpdateView):
         context = self.get_context_data(form=form)
         formsets = [context['phone'], context['email']]
         for formset in formsets:
-            print(formset[0])
             if formset.is_valid():
                 contacts = formset.save(commit=False)
                 for contact in contacts:
@@ -147,7 +113,6 @@ class CompanyUpdate(PermissionRequiredMixin, UpdateView):
                     contact.save()
             else:
                 return super().form_invalid(form)
-
         return super().form_valid(form)
 
 
@@ -234,10 +199,7 @@ class ProjectUpdate(PermissionRequiredMixin, UpdateView):
         return queryset
 
 
-class PersonView(LoginRequiredMixin, ListView):
-    model = Person
-    template_name = "cabinet.html"
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
+class ProjectDelete(PermissionRequiredMixin, DeleteView):
+    model = Project
+    permission_required = 'someapp.delete_project'
+    success_url = reverse_lazy('projects')

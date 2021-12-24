@@ -26,7 +26,18 @@
     <main class="container">
         <div class="row">
             <div class="col-9 mx-auto col-md-12 col-lg-12">
-                <h1 class="my-5">{{ company.title }} {% if perms.someapp.change_company %}<a class="ml-5" href="{% url 'update-company' company.slug %}"><span class="material-icons">edit</span>{% endif %}</a></h1>
+                <h1 class="my-5">{{ company.title }}
+                    {% if perms.someapp.change_company %}
+                    <a class="ml-5" href="{% url 'update-company' company.slug %}">
+                        <span class="material-icons">edit</span>
+                    </a>
+                    {% endif %}
+                    {% if perms.someapp.delete_company %}
+                    <a class="ml-5" href="{% url 'delete-company' company.slug %}">
+                        <span class="material-icons">delete</span>
+                    </a>
+                    {% endif %}
+                </h1>
                 <small class="card-title mb-4 font-italic">The contact person: {{ company.contact_person }}</small>
                 <img src="" alt="">
                 <p class="card-text">{{ company.description|safe }}</p>
@@ -86,7 +97,11 @@
                     <h3 class="text-secondary get-center">
                         There are no projects available
                         {% if perms.someapp.add_project %}
-                        <small class="d-block text-center mt-3"><a href="{% url 'new-project' company.slug %}"> + add a new project</a></small>
+                        <small class="d-block text-center mt-3">
+                            {% for project in projects.all %}
+                            <a href="{% url 'new-project' project.slug company.slug %}"> + add a new project</a>
+                            {% endfor %}
+                        </small>
                         {% endif %}
                     </h3>
                 </div>

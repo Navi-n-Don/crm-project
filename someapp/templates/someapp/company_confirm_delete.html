@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    Delete {{ company.title }}
+{% endblock %}
+
+{% block menu_1 %}
+    <li class="nav-item">
+        <a class="nav-link text-primary" href="{% url 'companies' %}">Company List</a>
+    </li>
+    <li class="nav-item ml-5">
+        <a class="nav-link text-primary" href="{% url 'projects' %}">All Projects</a>
+    </li>
+{% endblock %}
+
+{% block menu_2 %}
+    <li class="nav-item">
+        <a class="nav-link text-primary" href="{% url 'cabinet' %}">Personal Room</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+
+    <main class="container">
+        <div class="row">
+
+                    <div class="text-secondary get-center">
+                        <h4 class="text-center">Are you sure you want to delete "{{ company.title }}"?</h4>
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            <input type="submit" value="I'm sure" class="shadow rounded font-weight-bold text-uppercase mt-5 py-2 w-50 btn btn-danger d-block mx-auto">
+                        </form>
+                    </div>
+        </div>
+    </main>
+
+{% endblock %}
