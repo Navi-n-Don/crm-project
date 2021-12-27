@@ -1,14 +1,16 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
-from django.http import request
-from django.shortcuts import render, redirect, get_object_or_404
+from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from .filters import CompanyFilter, ProjectFilter
-from .forms import PhoneInlineFormSet, EmailInlineFormSet, ProjectForm, CompanyForm, ProjectUpdateForm
-from .models import Company, Phone, Email, Project
-from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView, FormView
+
+from interactions.models import Interaction
+from main.filters import CompanyFilter, ProjectFilter
+from .forms import PhoneInlineFormSet, EmailInlineFormSet, ProjectForm, ProjectUpdateForm
+from .models import Company, Project
+from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 
 
-class CompanyListView(ListView):
+class CompanyListView(LoginRequiredMixin, ListView):
     model = Company
     template_name = "someapp/companies.html"
     context_object_name = "companies"
@@ -16,8 +18,6 @@ class CompanyListView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['phones'] = Phone.objects.all()
-        context['emails'] = Email.objects.all()
         context['filterset'] = CompanyFilter(self.request.GET, queryset=self.get_queryset()).filters['o']
         return context
 
@@ -30,21 +30,21 @@ class CompanyListView(ListView):
         return query
 
 
-class CompanyDetailView(DetailView):
+class CompanyDetailView(LoginRequiredMixin, DetailView):
     model = Company
     template_name = "someapp/company-details.html"
     context_object_name = "company"
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        datas = Company.objects.filter(slug=self.kwargs.get('slug'))
-        context = super().get_context_data(**kwargs)
-        context['phones'] = Phone.objects.all()
-        context['emails'] = Email.objects.all()
-        context['projects'] = Project.objects.filter(company_id=datas[0].pk)
+    def get_context_data(self, **kwargs):
+        context = super(CompanyDetailView, self).get_context_data(**kwargs)
+        project = Project.objects.filter(company_id=self.model.objects.get(slug=self.kwargs['slug']).pk)
+        paginator = Paginator(project, 2)
+        page_number = self.request.GET.get('page')
+        context['page_obj'] = paginator.get_page(page_number)
         return context
 
 
-class CompanyCreate(PermissionRequiredMixin, CreateView):
+class CompanyCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Company
     fields = ('title', 'contact_person', 'description', 'address',)
     permission_required = 'someapp.add_company'
@@ -82,7 +82,7 @@ class CompanyCreate(PermissionRequiredMixin, CreateView):
                 return super().form_invalid(form)
 
 
-class CompanyUpdate(PermissionRequiredMixin, UpdateView):
+class CompanyUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Company
     fields = ('title', 'contact_person', 'description', 'address',)
     permission_required = 'someapp.change_company'
@@ -116,13 +116,13 @@ class CompanyUpdate(PermissionRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class CompanyDelete(PermissionRequiredMixin, DeleteView):
+class CompanyDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Company
     permission_required = 'someapp.delete_company'
     success_url = reverse_lazy('companies')
 
 
-class ProjectListView(ListView):
+class ProjectListView(LoginRequiredMixin, ListView):
     model = Project
     template_name = "someapp/projects.html"
     context_object_name = "projects"
@@ -142,64 +142,60 @@ class ProjectListView(ListView):
         return query
 
 
-class ProjectDetailView(DetailView):
+class ProjectDetailView(LoginRequiredMixin, DetailView):
     model = Project
     template_name = "someapp/project-details.html"
     context_object_name = "project"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['company_slug'] = Company.objects.filter(slug=self.kwargs['company_slug'])[0].slug
+        context['company_slug'] = Company.objects.get(slug=self.kwargs['company_slug']).slug
+        actions = Interaction.objects.filter(project_id=self.model.objects.get(slug=self.kwargs['project_slug']).pk)
+        paginator = Paginator(actions, 2)
+        page_number = self.request.GET.get('page')
+        context['page_obj'] = paginator.get_page(page_number)
         return context
 
     def get_object(self, queryset=None):
-        getObjectCompany = get_object_or_404(Company, slug=self.kwargs['company_slug'])
-        queryset = self.model.objects.filter(company_id=Company.objects.filter(title=getObjectCompany)[0].pk)
+        queryset = self.model.objects.filter(company_id=Company.objects.get(
+            slug=self.kwargs['company_slug']).pk).filter(slug=self.kwargs['project_slug'])
         return queryset
 
 
-class ProjectCreate(PermissionRequiredMixin, CreateView):
+class ProjectCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Project
     form_class = ProjectForm
     permission_required = 'someapp.add_project'
     template_name = "someapp/new-project.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(ProjectCreate, self).get_context_data(**kwargs)
-        return context
 
     def get_form_kwargs(self):
         kwargs = super(ProjectCreate, self).get_form_kwargs()
         if kwargs['instance'] is None:
             kwargs['instance'] = Project()
         kwargs['instance'].creator = self.request.user
-        kwargs['instance'].company = Company.objects.filter(slug=self.kwargs.get('slug'))[0]
+        kwargs['instance'].company = Company.objects.get(slug=self.kwargs.get('slug'))
         return kwargs
 
     def get_form_class(self):
         modelform = super().get_form_class()
         modelform.base_fields['creator'].limit_choices_to = {'username': self.request.user}
-        modelform.base_fields['company'].limit_choices_to = {'title': Company.objects.filter(slug=self.kwargs.get('slug'))[0]}
+        modelform.base_fields['company'].limit_choices_to = {'title': Company.objects.get(slug=self.kwargs.get('slug'))}
         return modelform
 
 
-class ProjectUpdate(PermissionRequiredMixin, UpdateView):
+class ProjectUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Project
     form_class = ProjectUpdateForm
     permission_required = 'someapp.change_company'
     template_name_suffix = '_update'
 
-    def get_context_data(self, **kwargs):
-        context = super(ProjectUpdate, self).get_context_data(**kwargs)
-        return context
-
     def get_object(self, queryset=None):
-        getObjectCompany = get_object_or_404(Company, slug=self.kwargs['company_slug'])
-        queryset = self.model.objects.filter(company_id=Company.objects.filter(title=getObjectCompany)[0].pk).first()
+        get_object_company = get_object_or_404(Company, slug=self.kwargs['company_slug'])
+        queryset = self.model.objects.get(company_id=Company.objects.get(title=get_object_company).pk)
         return queryset
 
 
-class ProjectDelete(PermissionRequiredMixin, DeleteView):
+class ProjectDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Project
     permission_required = 'someapp.delete_project'
     success_url = reverse_lazy('projects')

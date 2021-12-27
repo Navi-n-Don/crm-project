@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    {{ current.get_appeals }}
+{% endblock %}
+
+{% block content %}
+
+    <main class="container">
+        <div class="row">
+            <div class="col-10 mx-auto col-md-10 col-lg-10">
+                <h3 class="mt-5">Interaction Type: {{ current.get_appeals }}
+                {% for keyword in current.keyword.all %}
+                    {% if keyword is not None %}
+                    <small class="float-right h6">Keywords: </small>
+                    <div class="clearfix"></div>
+                    {% endif %}
+                {% endfor %}
+
+                    {% if perms.interaction.change_interaction %}
+                    <a class="ml-5" href="{% url 'update-action' current.pk %}">
+                        <span class="material-icons">edit</span>
+                    </a>
+                    {% endif %}
+                    {% if perms.interaction.delete_interaction %}
+                    <a class="ml-5" href="{% url 'delete-action' current.pk %}">
+                        <span class="material-icons">delete</span>
+                    </a>
+                    {% endif %}
+                </h3>
+                <small class="card-title mb-4 font-italic">Manager: {{ current.manager }}</small>
+                <p class="card-text">{{ current.description|safe }}</p>
+                <p class="mt-5 text-uppercase"><span class="text-underline text-capitalize">Project to:</span> {{ current.project }}</p>
+
+                <h4 class="clearfix">
+                    <span class="text-secondary font-italic float-right">
+                        Rating: {{ current.rating }}
+                    </span>
+                </h4>
+                <hr>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}

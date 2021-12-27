@@ -6,21 +6,6 @@
     Personal Room
 {% endblock %}
 
-{% block menu_1 %}
-    <li class="nav-item">
-        <a class="nav-link text-primary" href="{% url 'companies' %}">Company List</a>
-    </li>
-    <li class="nav-item ml-5">
-        <a class="nav-link text-primary" href="{% url 'projects' %}">All Projects</a>
-    </li>
-{% endblock %}
-
-{% block menu_2 %}
-    <li class="nav-item active">
-        <a class="nav-link disabled text-muted">Personal Room <span class="sr-only">(current)</span></a>
-    </li>
-{% endblock %}
-
 {% block content %}
 
     <main class="container">
@@ -57,7 +42,33 @@
                 </dl>
             </div>
             <img class="user-img" src="{{ user.image.url }}" alt="{{ user.last_name }} {{ user.first_name }}">
+            <div class="clearfix"></div>
         </div>
+        {% for action in interaction %}
+        <div class="row">
+            <div class="col-6 mx-auto col-md-6 col-lg-6">
+                <div>
+                    <div class="card mb-3 ml-3">
+                        <div class="card-body text-secondary">
+                            <h5 class="card-title">
+                                <a href="">
+                                    {{ action.get_appeals }}
+                                </a>
+                                <a href=""
+                                   class="float-right"><span class="material-icons">edit</span>
+                                </a>
+                            </h5>
+                            <p class="card-text">{{ action.description|safe|truncatechars:150 }}</p>
+                        </div>
+                        <div class="card-footer">
+                            <small class="float-right font-italic">Rating: {{ action.rating }}</small>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </main>
 
 {% endblock %}

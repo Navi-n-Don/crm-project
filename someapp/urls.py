@@ -1,5 +1,6 @@
 from django.urls import path, include
 from . import views
+from interactions.views import ActionDetailView, ActionCreateView, ActionUpdate
 
 urlpatterns = [
     path('company-list/', include([
@@ -9,12 +10,15 @@ urlpatterns = [
             path('', views.CompanyDetailView.as_view(), name='company-details'),
             path('update/', views.CompanyUpdate.as_view(), name='update-company'),
             path('delete/', views.CompanyDelete.as_view(), name='delete-company'),
+            path('new-project/', views.ProjectCreate.as_view(), name='new-project'),
         ])),
         path('<slug:company_slug>/<slug:project_slug>/', include([
             path('', views.ProjectDetailView.as_view(), name='project-details'),
-            path('new-project/', views.ProjectCreate.as_view(), name='new-project'),
             path('update/', views.ProjectUpdate.as_view(), name='update-project'),
             path('delete/', views.ProjectDelete.as_view(), name='delete-project'),
+            path('new-action/', ActionCreateView.as_view(), name='new-action'),
+            path('<int:pk>/', ActionDetailView.as_view(), name='interaction-details'),
+            path('<int:pk>/update/', ActionUpdate.as_view(), name='update-action'),
         ])),
 
     ])),

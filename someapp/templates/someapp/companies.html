@@ -12,24 +12,11 @@
     Company List
 {% endblock %}
 
-{% block menu_1 %}
-    <li class="nav-item active">
-        <a class="nav-link disabled text-muted">Company List <span class="sr-only">(current)</span></a>
-    </li>
-    <li class="nav-item ml-5">
-        <a class="nav-link text-primary" href="{% url 'projects' %}">All Projects</a>
-    </li>
-{% endblock %}
-
-{% block menu_2 %}
-    <li class="nav-item">
-        <a class="nav-link text-primary" href="{% url 'cabinet' %}">Personal Room</a>
-    </li>
-{% endblock %}
-
 {% block content %}
 
-<noscript class="d-block text-center bg-warning text-light py-3">This page requires Javascript to work correctly.</noscript>
+    <noscript class="d-block text-center bg-warning text-light py-3">
+        This page requires Javascript to work correctly.
+    </noscript>
     <main class="container">
         <div class="row">
             {% if companies %}
@@ -61,37 +48,19 @@
                 {% for company in companies %}
                 <div class="card my-2">
                     <details>
-                        <summary class="card-header">{{ company.title }} <span class="text-muted">(The contact person: {{ company.contact_person }})</span><cite class="text-warning float-right" style="font-size: 10pt;">last changed: {{ company.updated_date|date:"d.m.Y" }} in {{ company.updated_date|time:"H:i" }}</cite></summary>
+                        <summary class="card-header">{{ company.title }}
+                            <span class="text-muted">(The contact person: {{ company.contact_person }})</span>
+                            <cite class="text-warning float-right" style="font-size: 10pt;">
+                                last changed: {{ company.updated_date|date:"d.m.Y" }}
+                                in {{ company.updated_date|time:"H:i" }}</cite></summary>
                         <div class="card-body">
-                            <h4 class="card-title"><em>The contact person: {{ company.contact_person }}</em><cite class="text-muted float-right" style="font-size: 10pt;">{{ company.created_date|date:"d.m.Y" }} in {{ company.created_date|time:"H:i" }}</cite></h4>
+                            <h4 class="card-title"><em>The contact person: {{ company.contact_person }}</em></h4>
                             <p class="card-text">{{ company.description|safe }}</p>
                             <br>
-                            <div class="float-right">
-                                <p class="card-text"><small class="text-muted">Address: {{ company.address }}</small></p>
-                                    <small class="text-muted">
-                                        <ul class="list-unstyled">Contact numbers:
-                                            {% for number in phones.all %}
-                                            {% if number.company_id == company.id %}
-                                            <li class="text-right">{{ number }}</li>
-                                            {% endif %}
-                                            {% endfor %}
-                                        </ul>
-                                    </small>
-                                    <small class="text-muted">
-                                        <span class="d-inline-block align-text-top">E-mail:</span>
-                                        <ul class="mx-1 list-unstyled d-inline-block align-text-top">
-                                            {% for email in emails.all %}
-                                            {% if email.company_id == company.id %}
-                                            <li>{{ email }}</li>
-                                            {% endif %}
-                                            {% endfor %}
-                                        </ul>
-                                    </small>
-                                </p>
-                            </div>
-                            <div class="clearfix"></div>
-                            <br>
-                            <a href="{{ company.get_absolute_url }}" class="btn btn-outline-info px-5">Details</a>
+                            <a href="{{ company.get_absolute_url }}" class="btn btn-outline-info px-5 float-right">
+                                Details
+                            </a>
+                            <div class="clearfix">
                         </div>
                     </details>
                 </div>
@@ -108,7 +77,11 @@
                         {% endif %}
 
                         {% if page_obj.previous_page_number != 1 %}
-                        <li class="page-item"><a class="page-link" href="?{% param_replace page=page_obj.previous_page_number %}">Previous</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="?{% param_replace page=page_obj.previous_page_number %}">
+                                Previous
+                            </a>
+                        </li>
                         {% else %}
                         <li class="page-item disabled"><a class="page-link">Previous</a></li>
                         {% endif %}
@@ -117,13 +90,19 @@
                             {% if page_obj.number == page_num %}
                             <li class="page-item disabled"><a class="page-link">{{ page_num }}</a></li>
                             {% else %}
-                            <li class="page-item"><a class="page-link" href="?{% param_replace page=page_num %}">{{ page_num }}</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="?{% param_replace page=page_num %}">{{ page_num }}</a>
+                            </li>
                             {% endif %}
                         {% endfor %}
 
                         {% if page_obj.has_next %}
-                        <li class="page-item"><a class="page-link" href="?{% param_replace page=page_obj.next_page_number %}">Next</a></li>
-                        <li class="page-item"><a class="page-link" href="?{% param_replace page=paginator.num_pages %}">Last</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="?{% param_replace page=page_obj.next_page_number %}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?{% param_replace page=paginator.num_pages %}">Last</a>
+                        </li>
                         {% else %}
                         <li class="page-item disabled"><a class="page-link">Next</a></li>
                         <li class="page-item disabled"><a class="page-link">Last</a></li>
@@ -135,7 +114,9 @@
             <h3 class="text-secondary get-center">
                 There are no companies available
                 {% if perms.someapp.add_company %}
-                <small class="d-block text-center mt-3"><a href="{% url 'new-company' %}"> + add a new company</a></small>
+                <small class="d-block text-center mt-3">
+                    <a href="{% url 'new-company' %}"> + add a new company</a>
+                </small>
                 {% endif %}
             </h3>
             {% endif %}

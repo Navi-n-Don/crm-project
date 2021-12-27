@@ -1,0 +1,45 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container collapse navbar-collapse" id="navbarSupportedContent">
+        {% if user.username == 'Admin' %}
+        <a class="nav-link text-primary position-absolute" style="left:1%;" href="{{request.build_absolute_uri|cut:request.get_full_path}}/admin/"><span class="material-icons">settings</span></a>
+        {% endif %}
+        <ul class="navbar-nav mr-auto text-uppercase">
+            {% if companies %}
+            <li class="nav-item active">
+                <a class="nav-link disabled text-muted">Company List <span class="sr-only">(current)</span></a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link text-primary" href="{% url 'companies' %}">Company List</a>
+            </li>
+            {% endif %}
+
+            {% if projects %}
+            <li class="nav-item active ml-5">
+                <a class="nav-link disabled text-muted">All Projects <span class="sr-only">(current)</span></a>
+            </li>
+            {% else %}
+            <li class="nav-item ml-5">
+                <a class="nav-link text-primary" href="{% url 'projects' %}">All Projects</a>
+            </li>
+            {% endif %}
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+            <ul class="navbar-nav mr-auto text-uppercase">
+                {% if cabinet %}
+                <li class="nav-item active">
+                    <a class="nav-link disabled text-muted">{{ user.username }} <span class="sr-only">(current)</span></a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link text-primary" href="{% url 'cabinet' %}">{{ user.username }}</a>
+                </li>
+                {% endif %}
+                <li class="nav-item ml-5">
+                    <a class="nav-link text-primary" href="{% url 'logout' %}"><span class="material-icons">logout</span></a>
+                </li>
+            </ul>
+        </form>
+    </div>
+</nav>

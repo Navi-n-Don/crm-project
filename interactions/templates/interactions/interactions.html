@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% load templatetags %}
+
+{% block addjs %}
+<script src="{% static 'js/sorting.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+    Interaction List
+{% endblock %}
+
+{% block content %}
+
+    <noscript class="d-block text-center bg-warning text-light py-3">
+        This page requires Javascript to work correctly.
+    </noscript>
+    <main class="container">
+        <div class="row">
+            {% if actions %}
+            <div class="col-9 mx-auto col-md-12 col-lg-12">
+                <h1 class="my-5 text-center">Interactions</h1>
+                {% if request.get_full_path|cut:request.path == '' %}
+                <form method="get" id="sort" action="{% url 'interactions' %}?sorting=title" class="text-right my-3">
+                <script>$(document).ready(function() {$('#sort').submit();});</script>
+                {% else %}
+                <form method="get" class="text-right my-3">
+                {% endif %}
+                    <select name="sorting" id="sorting" class="text-secondary p-2 ml-2">
+                    {% for key, value in filterset.field.choices %}
+                    <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                    </select>
+                </form>
+
+                <script>
+                    $('#sorting').on('change', function () {
+                        $(this.form).submit();
+                    });
+
+                    let path = '{{ request.get_full_path|cut:request.path }}'.slice(1,);
+                        reqObj = getDict(path);
+                </script>
+
+                <div>
+                    {% for action in actions %}
+                    <div>
+                        <div class="card mb-3 ml-3">
+                            <div class="card-body text-secondary">
+                                <h5 class="card-title">
+                                    <a href="{% url 'interaction-details' company_slug project.0.slug interaction.pk %}">{{ action.get_appeals }}</a>
+                                    {% if action.manager|cut:" " == user.username|cut:" " %}
+                                    <span class="float-right"><span class="material-icons">edit</span></span>
+                                    {% endif %}
+                                </h5>
+                                <p class="card-text">{{ action.description|safe|truncatechars:150 }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <small class="float-right font-italic">Rating: {{ action.rating }}</small>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <nav class="container mt-5">
+                    <ul class="pagination">
+                        {% if is_paginated %}
+                            {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?{% param_replace page=1 %}">First</a></li>
+                            {% else %}
+                            <li class="page-item disabled"><a class="page-link">First</a></li>
+                            {% endif %}
+
+                            {% if page_obj.previous_page_number != 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% param_replace page=page_obj.previous_page_number %}">
+                                    Previous
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled"><a class="page-link">Previous</a></li>
+                            {% endif %}
+
+                            {% for page_num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == page_num %}
+                                <li class="page-item disabled"><a class="page-link">{{ page_num }}</a></li>
+                                {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% param_replace page=page_num %}">{{ page_num }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% param_replace page=page_obj.next_page_number %}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?{% param_replace page=paginator.num_pages %}">Last</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled"><a class="page-link">Next</a></li>
+                            <li class="page-item disabled"><a class="page-link">Last</a></li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% else %}
+            <h3 class="text-secondary get-center">There are no projects available</h3>
+            {% endif %}
+
+        </div>
+    </main>
+
+{% endblock %}

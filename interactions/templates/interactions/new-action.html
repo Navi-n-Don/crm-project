@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Create New Company
+{% endblock %}
+
+{% block content %}
+
+<noscript class="d-block text-center bg-warning text-light py-3">This page requires Javascript to work correctly.</noscript>
+    <main class="container">
+        <div class="row">
+            <h3 class="text-center my-5">Post a New Interaction</h3>
+            <form id="interaction_form" action="" method="post" class="d-block mx-auto my-5">
+                {% csrf_token %}
+                {{ form.media }}
+                {{ form.appeals }}
+                {{ form.description }}
+                <input type="submit" value="Post" class="btn btn-success my-3 px-5 float-right">
+            </form>
+            <div class="clearfix"></div>
+        </div>
+    </main>
+
+{% endblock %}

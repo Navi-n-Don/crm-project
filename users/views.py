@@ -6,6 +6,8 @@ from django.http import request
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
+
+from interactions.models import Interaction
 from main import settings
 from users.forms import PersonUpdateForm, PersonCreationForm
 from users.models import Person
@@ -65,8 +67,11 @@ class PersonView(LoginRequiredMixin, ListView):
     model = Person
     template_name = "users/cabinet.html"
 
-    def get_context_data(self, *args, **kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['interaction'] = []
+        for action in Interaction.objects.filter(manager_id=self.request.user.id):
+            context['interaction'].append(action)
         return context
 
 
@@ -77,12 +82,8 @@ class PersonUpdate(PermissionRequiredMixin, UpdateView):
     template_name_suffix = '_update'
     success_url = reverse_lazy('cabinet')
 
-    def get_context_data(self, **kwargs):
-        context = super(PersonUpdate, self).get_context_data(**kwargs)
-        return context
-
     def get_object(self, queryset=None):
-        queryset = self.model.objects.filter(username=self.request.user).first()
+        queryset = self.request.user
         return queryset
 
 
@@ -92,5 +93,5 @@ class PersonDelete(PermissionRequiredMixin, DeleteView):
     success_url = reverse_lazy('login')
 
     def get_object(self, queryset=None):
-        queryset = self.model.objects.filter(username=self.request.user).first()
+        queryset = self.request.user
         return queryset

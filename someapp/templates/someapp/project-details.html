@@ -2,101 +2,162 @@
 
 {% load static %}
 
+{% load templatetags %}
+
+{% load crispy_forms_tags %}
+
 {% block title %}
-    {{ project.title }}
-{% endblock %}
-
-{% block menu_1 %}
-    <li class="nav-item">
-        <a class="nav-link text-primary" href="{% url 'companies' %}">Company List</a>
-    </li>
-    <li class="nav-item ml-5">
-        <a class="nav-link text-primary" href="{% url 'projects' %}">All Projects</a>
-    </li>
-{% endblock %}
-
-{% block menu_2 %}
-    <li class="nav-item">
-        <a class="nav-link text-primary" href="{% url 'cabinet' %}">Personal Room</a>
-    </li>
+    {{ project.0.title }}
 {% endblock %}
 
 {% block content %}
 
     <main class="container">
         <div class="row">
-            {% if project %}
             <div class="col-10 mx-auto col-md-10 col-lg-10">
-                <h1 class="my-5 position-relative">{{ project.0.title }}
-                    {% if user.username|cut:" " == project.0.creator|cut:" " %}
-                    <a class="ml-3" href="{% url 'update-project' company_slug project.0.slug %}">
+            {% for project_item in project %}
+                <h1 class="my-5 position-relative">{{ project_item.title }}
+                    {% if user.username|cut:" " == project_item.creator|cut:" " %}
+                    <a class="ml-3" href="{% url 'update-project' company_slug project_item.slug %}">
                         <span class="material-icons">edit</span>
                     </a>
-                    <a class="ml-3" href="{% url 'delete-project' company_slug project.0.slug %}">
+                    <a class="ml-3" href="{% url 'delete-project' company_slug project_item.slug %}">
                         <span class="material-icons">delete</span>
                     </a>
                     {% endif %}
-                    <small class="status-project {{project.0.days_to.1}}">{{project.0.days_to.0}}</small>
+                    <small class="status-project {{project_item.days_to.1}}">{{project_item.days_to.0}}</small>
                     {% if user.username == Admin %}
 <!--                    {% now 'Y-m-d' as today %}-->
-<!--                    {% if project.0.begin|date:"Y-m-d" > today %}-->
-<!--                    <small class="status-project text-secondary">Will be started {{project.0.begin|date:"d.m.y"}}</small>-->
-<!--                    {% elif project.0.end|date:"Y-m-d" < today %}-->
+<!--                    {% if project_item.begin|date:"Y-m-d" > today %}-->
+<!--                    <small class="status-project text-secondary">-->
+<!--                        Will be started {{project_item.begin|date:"d.m.y"}}-->
+<!--                    </small>-->
+<!--                    {% elif project_item.end|date:"Y-m-d" < today %}-->
 <!--                    <small class="status-project text-success">Completed</small>-->
 <!--                    {% else %}-->
 <!--                    <small class="status-project text-info">In Progress</small>-->
 <!--                    {% endif %}-->
                     {% endif %}
                 </h1>
-                <small class="card-title mb-4 font-italic">Responsible Person: {{ project.0.creator }}</small>
-                <p class="card-text">{{ project.0.description|safe }}</p>
+                <small class="card-title mb-4 font-italic">Responsible Person: {{ project_item.creator }}</small>
+                <p class="card-text">{{ project_item.description|safe }}</p>
                 <p class="text-uppercase mt-5 text-underline">Terms:</p>
                 <dl class="row ml-5">
                     <dt class="col-sm-3 mb-3">Begin:</dt>
-                        <dd class="col-sm-9">{{ project.0.begin|date:"d E Y" }}</dd>
+                        <dd class="col-sm-9">{{ project_item.begin|date:"d E Y" }}</dd>
 
                     <dt class="col-sm-3 mb-3">End:</dt>
-                        <dd class="col-sm-9">{{ project.0.end|date:"d E Y" }}</dd>
+                        <dd class="col-sm-9">{{ project_item.end|date:"d E Y" }}</dd>
                 </dl>
-                <h4 class="clearfix"><span class="text-secondary font-italic float-right">Price of project: ${{ project.0.price }}</span></h4>
+                <h4 class="clearfix">
+                    <span class="text-secondary font-italic float-right">
+                        Price of project: ${{ project_item.price }}
+                    </span>
+                </h4>
                 <hr>
-            {% else %}
-                <div class="position-relative py-5 my-4">
-                    <h3 class="text-secondary get-center">
-                        There are no project available
-                        {% if perms.someapp.add_project %}
-                        <small class="d-block text-center mt-3"><a href=""> + add a new project</a></small>
-                        {% endif %}
-                    </h3>
-                </div>
-            {% endif %}
 
-                {% if interactions %}
-                <h3 class="my-5 text-center">Interactions</h3>
-                <ol>
-                    <li>
-                        {% for interaction in interactions.all %}
-                        <div class="card border-info mb-3 ml-3">
-                            <div class="card-body text-secondary">
-                                <h5 class="card-title"><a href=""></a></h5>
-                                <p class="card-text"></p>
-                                <small class="float-right font-italic"></small>
-                                <div class="clearfix"></div>
-                            </div>
-                        {% endfor %}
-                        </div>
-                    </li>
-                </ol>
-                {% else %}
-                <div class="position-relative py-5 my-4">
-                    <h3 class="text-secondary get-center">
-                        There are no interactions available
-                        {% if perms.someapp.add_project %}
-                        <small class="d-block text-center mt-3"><a href=""> + add a new interaction</a></small>
+                {% if project_item.interaction_set.all %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        {% if perms.someapp.add_interaction %}
+                            <small class="d-block mt-3 align-self-start">
+                                <a href="{% url 'new-action' company_slug project.0.slug %}">
+                                    + add a new interaction
+                                </a>
+                            </small>
+                        {% else %}
+                            <small class="d-block mt-3 align-self-start"></small>
                         {% endif %}
-                    </h3>
-                </div>
+                            <h3 class="my-5 text-center">Interactions</h3>
+                            <div>Hello</div>
+                    </div>
+                    <div>
+                        {% for interaction in page_obj %}
+                        <div>
+                            <div class="card mb-3 ml-3">
+                                <div class="card-body text-secondary">
+                                    <h5 class="card-title">
+                                        <a href="{% url 'interaction-details' company_slug project.0.slug interaction.pk %}">{{ interaction.get_appeals }}</a>
+                                        {% if interaction.manager|cut:" " == user.username|cut:" " %}
+                                        <a href="{% url 'update-action' company_slug project.0.slug interaction.pk %}" class="float-right"><span class="material-icons">edit</span></a>
+                                        {% endif %}
+                                    </h5>
+                                    <p class="card-text">{{ interaction.description|safe|truncatechars:150 }}</p>
+                                </div>
+                                <div class="card-footer">
+                                    <small class="float-right font-italic">Rating: {{ interaction.rating }}</small>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <nav class="container mt-5">
+                            <ul class="pagination">
+
+                                    {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{% param_replace page=1 %}">First</a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item disabled"><a class="page-link">First</a></li>
+                                    {% endif %}
+
+                                    {% if page_obj.previous_page_number != 1 %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="?{% param_replace page=page_obj.previous_page_number %}">Previous
+                                        </a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item disabled"><a class="page-link">Previous</a></li>
+                                    {% endif %}
+
+                                    {% for page_num in page_obj.paginator.page_range %}
+                                        {% if page_obj.number == page_num %}
+                                        <li class="page-item disabled"><a class="page-link">{{ page_num }}</a></li>
+                                        {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?{% param_replace page=page_num %}">
+                                                {{ page_num }}
+                                            </a>
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{% param_replace page=page_obj.next_page_number %}">
+                                            Next
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{% param_replace page=paginator.num_pages %}">
+                                            Last
+                                        </a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item disabled"><a class="page-link">Next</a></li>
+                                    <li class="page-item disabled"><a class="page-link">Last</a></li>
+                                    {% endif %}
+
+                            </ul>
+                        </nav>
+                    </div>
+                {% else %}
+                    <div>
+                        <h3 class="text-secondary text-center">
+                            There are no interactions available
+                            {% if perms.someapp.add_interaction %}
+                            <small class="d-block text-center mt-3">
+                                <a href="{% url 'new-action' company_slug project.0.slug %}">
+                                    + add a new interaction
+                                </a>
+                            </small>
+                            {% endif %}
+                        </h3>
+                    </div>
                 {% endif %}
+            {% endfor %}
             </div>
         </div>
     </main>

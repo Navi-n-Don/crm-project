@@ -5,19 +5,23 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-    Update {{ user.username }}
+    Update
 {% endblock %}
 
 {% block content %}
 
-<noscript class="d-block text-center bg-warning text-light py-3">This page requires Javascript to work correctly.</noscript>
+    <noscript class="d-block text-center bg-warning text-light py-3">
+        This page requires Javascript to work correctly.
+    </noscript>
     <main class="container">
         <div class="row">
             <div class="col-9 mx-auto col-md-6 col-lg-6">
-                <h1 class="my-5 text-center" id="update">{{ user.username }}</h1>
-                <form action="" method="post" id="form_company" enctype="multipart/form-data">
+                <h3 class="my-5 text-center" id="update">Update Intaraction</h3>
+                <form action="" method="post" id="form_company">
                     {% csrf_token %}
+                    {{ form.media }}
                     <p>{{ form|crispy }}</p>
+
                     <button type="submit" class="btn btn-success d-block mx-auto mt-4 py-2 px-5">Update</button>
                     <div class="clearfix"></div>
                 </form>

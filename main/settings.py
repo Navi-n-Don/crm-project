@@ -58,6 +58,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    'interactions.apps.InteractionsConfig',
     'users.apps.UsersConfig',
     'someapp.apps.SomeappConfig',
 ]
