@@ -1,8 +1,6 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-
 from interactions.models import Interaction
 from main.filters import CompanyFilter, ProjectFilter
 from .forms import PhoneInlineFormSet, EmailInlineFormSet, ProjectForm, ProjectUpdateForm
@@ -149,7 +147,6 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['company_slug'] = Company.objects.get(slug=self.kwargs['company_slug']).slug
         actions = Interaction.objects.filter(project_id=self.model.objects.get(slug=self.kwargs['project_slug']).pk)
         paginator = Paginator(actions, 2)
         page_number = self.request.GET.get('page')
@@ -157,8 +154,7 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
         return context
 
     def get_object(self, queryset=None):
-        queryset = self.model.objects.filter(company_id=Company.objects.get(
-            slug=self.kwargs['company_slug']).pk).filter(slug=self.kwargs['project_slug'])
+        queryset = self.model.objects.get(slug=self.kwargs['project_slug'])
         return queryset
 
 
@@ -190,8 +186,7 @@ class ProjectUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     template_name_suffix = '_update'
 
     def get_object(self, queryset=None):
-        get_object_company = get_object_or_404(Company, slug=self.kwargs['company_slug'])
-        queryset = self.model.objects.get(company_id=Company.objects.get(title=get_object_company).pk)
+        queryset = self.model.objects.get(slug=self.kwargs['project_slug'])
         return queryset
 
 

@@ -10,24 +10,28 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
+import environ
 from pathlib import Path
 from django.urls import reverse_lazy
 from .ckesettings import CKEDITOR_CONFIGS, CKEDITOR_UPLOAD_PATH
 
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+# False if not in os.environ because of casting above
+DEBUG = env('DEBUG')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-xq==d37wj&jetxn8^ixd)k5_149jk=-___eoj#(k5lp5jcc9qu'
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'xq==d37wj&jetxn8^ixd)k5_149jk=-___eoj#(k5lp5jcc9qu')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
+# Raises Django's ImproperlyConfigured
+# exception if SECRET_KEY not in os.environ
+SECRET_KEY = env('SECRET_KEY')
 
 ALLOWED_HOSTS = [
     '0.0.0.0',

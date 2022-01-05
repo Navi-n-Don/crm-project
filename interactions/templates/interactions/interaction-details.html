@@ -19,16 +19,18 @@
                     {% endif %}
                 {% endfor %}
 
-                    {% if perms.interaction.change_interaction %}
-                    <a class="ml-5" href="{% url 'update-action' current.pk %}">
+                {% if perms.interactions.change_interaction and current.manager|cut:" " == user.username|cut:" " %}
+                    <a class="ml-5" href="{% url 'update-action' current.project.company.slug current.project.slug current.pk %}">
                         <span class="material-icons">edit</span>
                     </a>
-                    {% endif %}
-                    {% if perms.interaction.delete_interaction %}
-                    <a class="ml-5" href="{% url 'delete-action' current.pk %}">
+                {% endif %}
+
+                {% if perms.interactions.delete_interaction and current.manager|cut:" " == user.username|cut:" " %}
+                    <a class="ml-5" href="{% url 'delete-action' current.project.company.slug current.project.slug current.pk %}">
                         <span class="material-icons">delete</span>
                     </a>
-                    {% endif %}
+                {% endif %}
+
                 </h3>
                 <small class="card-title mb-4 font-italic">Manager: {{ current.manager }}</small>
                 <p class="card-text">{{ current.description|safe }}</p>

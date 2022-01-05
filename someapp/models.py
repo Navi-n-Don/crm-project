@@ -7,7 +7,6 @@ from main import settings
 import datetime
 
 
-# Create your models here.
 class Company(models.Model):
     """
     Model representing a company

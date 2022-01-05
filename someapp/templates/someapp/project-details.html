@@ -7,7 +7,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-    {{ project.0.title }}
+    {{ project.title }}
 {% endblock %}
 
 {% block content %}
@@ -15,17 +15,16 @@
     <main class="container">
         <div class="row">
             <div class="col-10 mx-auto col-md-10 col-lg-10">
-            {% for project_item in project %}
-                <h1 class="my-5 position-relative">{{ project_item.title }}
-                    {% if user.username|cut:" " == project_item.creator|cut:" " %}
-                    <a class="ml-3" href="{% url 'update-project' company_slug project_item.slug %}">
+                <h1 class="my-5 position-relative">{{ project.title }}
+                    {% if user.username|cut:" " == project.creator|cut:" " %}
+                    <a class="ml-3" href="{% url 'update-project' project.company.slug project.slug %}">
                         <span class="material-icons">edit</span>
                     </a>
-                    <a class="ml-3" href="{% url 'delete-project' company_slug project_item.slug %}">
+                    <a class="ml-3" href="{% url 'delete-project' project.company.slug project.slug %}">
                         <span class="material-icons">delete</span>
                     </a>
                     {% endif %}
-                    <small class="status-project {{project_item.days_to.1}}">{{project_item.days_to.0}}</small>
+                    <small class="status-project {{project.days_to.1}}">{{project.days_to.0}}</small>
                     {% if user.username == Admin %}
 <!--                    {% now 'Y-m-d' as today %}-->
 <!--                    {% if project_item.begin|date:"Y-m-d" > today %}-->
@@ -39,28 +38,28 @@
 <!--                    {% endif %}-->
                     {% endif %}
                 </h1>
-                <small class="card-title mb-4 font-italic">Responsible Person: {{ project_item.creator }}</small>
-                <p class="card-text">{{ project_item.description|safe }}</p>
+                <small class="card-title mb-4 font-italic">Responsible Person: {{ project.creator }}</small>
+                <p class="card-text">{{ project.description|safe }}</p>
                 <p class="text-uppercase mt-5 text-underline">Terms:</p>
                 <dl class="row ml-5">
                     <dt class="col-sm-3 mb-3">Begin:</dt>
-                        <dd class="col-sm-9">{{ project_item.begin|date:"d E Y" }}</dd>
+                        <dd class="col-sm-9">{{ project.begin|date:"d E Y" }}</dd>
 
                     <dt class="col-sm-3 mb-3">End:</dt>
-                        <dd class="col-sm-9">{{ project_item.end|date:"d E Y" }}</dd>
+                        <dd class="col-sm-9">{{ project.end|date:"d E Y" }}</dd>
                 </dl>
                 <h4 class="clearfix">
                     <span class="text-secondary font-italic float-right">
-                        Price of project: ${{ project_item.price }}
+                        Price of project: ${{ project.price }}
                     </span>
                 </h4>
                 <hr>
 
-                {% if project_item.interaction_set.all %}
+                {% if project.interaction_set.all %}
                     <div class="d-flex justify-content-between align-items-center">
-                        {% if perms.someapp.add_interaction %}
+                        {% if perms.interactions.add_interaction %}
                             <small class="d-block mt-3 align-self-start">
-                                <a href="{% url 'new-action' company_slug project.0.slug %}">
+                                <a href="{% url 'new-action' project.company.slug project.slug %}">
                                     + add a new interaction
                                 </a>
                             </small>
@@ -75,10 +74,13 @@
                         <div>
                             <div class="card mb-3 ml-3">
                                 <div class="card-body text-secondary">
-                                    <h5 class="card-title">
-                                        <a href="{% url 'interaction-details' company_slug project.0.slug interaction.pk %}">{{ interaction.get_appeals }}</a>
+                                    <h5 class="card-title position-relative">
+                                        <a href="{% url 'interaction-details' project.company.slug project.slug interaction.pk %}">{{ interaction.get_appeals }}</a>
                                         {% if interaction.manager|cut:" " == user.username|cut:" " %}
-                                        <a href="{% url 'update-action' company_slug project.0.slug interaction.pk %}" class="float-right"><span class="material-icons">edit</span></a>
+                                        <span class="float-right">
+                                            <a href="{% url 'update-action' project.company.slug project.slug interaction.pk %}"><span class="material-icons">edit</span></a>
+                                            <a class="m-0 position-absolute delete-btn-action" href="{% url 'delete-action' project.company.slug project.slug interaction.pk %}"><span class="material-icons">close</span></a>
+                                        </span>
                                         {% endif %}
                                     </h5>
                                     <p class="card-text">{{ interaction.description|safe|truncatechars:150 }}</p>
@@ -147,9 +149,9 @@
                     <div>
                         <h3 class="text-secondary text-center">
                             There are no interactions available
-                            {% if perms.someapp.add_interaction %}
+                            {% if perms.interactions.add_interaction %}
                             <small class="d-block text-center mt-3">
-                                <a href="{% url 'new-action' company_slug project.0.slug %}">
+                                <a href="{% url 'new-action' project.company.slug project.slug %}">
                                     + add a new interaction
                                 </a>
                             </small>
@@ -157,7 +159,6 @@
                         </h3>
                     </div>
                 {% endif %}
-            {% endfor %}
             </div>
         </div>
     </main>

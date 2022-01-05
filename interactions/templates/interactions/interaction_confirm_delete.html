@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-    Delete {{ company.title }}
+    Delete {{ interaction.get_appeals }}
 {% endblock %}
 
 {% block content %}
@@ -12,7 +12,7 @@
         <div class="row">
 
                     <div class="text-secondary get-center">
-                        <h4 class="text-center">Are you sure you want to delete "{{ company.title }}"?</h4>
+                        <h4 class="text-center">Are you sure you want to delete "{{ interaction.get_appeals }}"?</h4>
                         <form action="" method="POST">
                             {% csrf_token %}
                             <input type="submit" value="I'm sure"

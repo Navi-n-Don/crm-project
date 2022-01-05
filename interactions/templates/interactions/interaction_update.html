@@ -5,7 +5,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-    Update
+    Update {{ interaction.get_appeals }}
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
     <main class="container">
         <div class="row">
             <div class="col-9 mx-auto col-md-6 col-lg-6">
-                <h3 class="my-5 text-center" id="update">Update Intaraction</h3>
+                <h3 class="my-5 text-center" id="update">Update {{ interaction.get_appeals }}</h3>
                 <form action="" method="post" id="form_company">
                     {% csrf_token %}
                     {{ form.media }}

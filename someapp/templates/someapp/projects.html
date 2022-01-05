@@ -44,31 +44,43 @@
                         reqObj = getDict(path);
                 </script>
 
-                <ol>
+                <ol class="list-unstyled">
                     {% for project in projects %}
                     <li>
                         {% now 'Y-m-d' as today %}
                         {% if project.begin|date:"Y-m-d" > today %}
                         <div class="card border-secondary mb-3 ml-3">
                             <div class="card-header text-right text-secondary">
-                                Will be started {{project.begin|date:"d.m.y"}}
+                                Will be started {{ project.begin|date:"d.m.y" }}
                             </div>
                         {% elif project.end|date:"Y-m-d" < today %}
                         <div class="card border-success mb-3 ml-3">
                             <div class="card-header text-right text-success">Completed</div>
                         {% else %}
                         <div class="card border-info mb-3 ml-3">
-                            <div class="card-header text-right text-info">In Progress</div>
+                            <div class="card-header">
+                                <span class="position-relative">
+                                    {% if user.username|cut:" " == project.creator|cut:" " %}
+                                    <a class="m-0 position-absolute delete-btn-project" href="{% url 'delete-project' project.company.slug project.slug %}">
+                                        <span class="material-icons">close</span>
+                                    </a>
+                                    <a href="{% url 'update-project' project.company.slug project.slug %}">
+                                        <span class="material-icons fs-1">edit</span>
+                                    </a>
+                                    {% endif %}
+                                </span>
+                                <span class="float-right text-info">In Progress</span>
+                            </div>
                         {% endif %}
                             <div class="card-body text-secondary">
                                 <h5 class="card-title">
-                                    <a href="{{ project.get_absolute_url }}">{{project.title}}</a>
+                                    <a href="{{ project.get_absolute_url }}">{{ project.title }}</a>
                                 </h5>
-                                <p class="card-text">{{project.description|safe}}</p>
+                                <p class="card-text">{{ project.description|safe }}</p>
                             </div>
                             <h4 class="card-header">
                                 <span class="text-secondary font-italic">Price of project:</span>
-                                ${{project.price}}
+                                ${{ project.price }}
                             </h4>
                         </div>
                     </li>

@@ -1,27 +1,17 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
 from interactions.forms import ActionForm, ActionUpdateForm
 from interactions.models import Interaction, Star
-from someapp.models import Company, Project
+from someapp.models import Project
 
 
 class ActionDetailView(LoginRequiredMixin, DetailView):
     model = Interaction
     template_name = "interactions/interaction-details.html"
     context_object_name = "current"
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['company_slug'] = Company.objects.get(slug=self.kwargs['company_slug']).slug
-        return context
-
-    def get_object(self, queryset=None):
-        queryset = Project.objects.filter(company_id=Company.objects.get(
-            slug=self.kwargs['company_slug']).pk).filter(slug=self.kwargs['project_slug'])
-        return queryset
 
 
 class ActionCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -52,3 +42,8 @@ class ActionUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 class ActionDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Interaction
     permission_required = 'interactions.delete_interaction'
+
+    def get_success_url(self):
+        return reverse_lazy('project-details',
+                            kwargs={'company_slug': self.kwargs['company_slug'],
+                                    "project_slug": self.kwargs['project_slug']})

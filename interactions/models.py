@@ -6,9 +6,6 @@ from main.constants import APPEALS
 from someapp.models import Project
 
 
-# Create your models here.
-
-
 class Interaction(models.Model):
     """
     Model representing a interactions between company and manager

@@ -10,7 +10,11 @@
 
     <main class="container">
         <div class="row">
-            <div class="col-6 mx-auto col-md-6 col-lg-6">
+            <div class="col-3 col-md-3 col-lg-3 ">
+                <img class="user-img" src="{{ selfroom.image.url }}"
+                     alt="{{ selfroom.last_name }} {{ selfroom.first_name }}">
+            </div>
+            <div class="col-6 col-md-6 col-lg-6">
                 <h1 class="my-5 text-center">Personal Room
                     <a class="ml-5" href="{% url 'cabinet-update' %}">
                         <span class="material-icons">edit</span>
@@ -21,54 +25,60 @@
                 </h1>
                 <dl class="row ml-5">
                     <dt class="col-sm-5 mb-3">Username:</dt>
-                        <dd class="col-sm-7">{{ user.username }}</dd>
+                        <dd class="col-sm-7">{{ selfroom.username }}</dd>
                     <dt class="col-sm-5 mb-3">First Name:</dt>
-                        <dd class="col-sm-7">{{ user.first_name }}</dd>
+                        <dd class="col-sm-7">{{ selfroom.first_name }}</dd>
                     <dt class="col-sm-5 mb-3">Last Name:</dt>
-                        <dd class="col-sm-7">{{ user.last_name }}</dd>
+                        <dd class="col-sm-7">{{ selfroom.last_name }}</dd>
                     <dt class="col-sm-5 mb-3">E-mail:</dt>
-                        <dd class="col-sm-7">{{ user.email }}</dd>
+                        <dd class="col-sm-7">{{ selfroom.email }}</dd>
                     <dt class="col-sm-5 mb-3">Group:</dt>
-                        {% if user.groups.all.0 is None %}
+                        {% if selfroom.groups.all.0 is None %}
                         <dd class="col-sm-7">Administrators</dd>
                         {% else %}
-                        <dd class="col-sm-7">{{ user.groups.all.0.name }}</dd>
+                        <dd class="col-sm-7">{{ selfroom.groups.all.0.name }}</dd>
                         {% endif %}
                     <hr>
                     <dt class="col-sm-5 mb-3">Access Grant Date:</dt>
-                        <dd class="col-sm-7">{{ user.date_joined }}</dd>
+                        <dd class="col-sm-7">{{ selfroom.date_joined }}</dd>
                     <dt class="col-sm-5 mb-3">Last Visit:</dt>
-                        <dd class="col-sm-7">{{ user.last_login }}</dd>
+                        <dd class="col-sm-7">{{ selfroom.last_login }}</dd>
                 </dl>
             </div>
-            <img class="user-img" src="{{ user.image.url }}" alt="{{ user.last_name }} {{ user.first_name }}">
-            <div class="clearfix"></div>
         </div>
-        {% for action in interaction %}
+        <hr>
+
         <div class="row">
-            <div class="col-6 mx-auto col-md-6 col-lg-6">
-                <div>
-                    <div class="card mb-3 ml-3">
-                        <div class="card-body text-secondary">
-                            <h5 class="card-title">
-                                <a href="">
-                                    {{ action.get_appeals }}
-                                </a>
-                                <a href=""
-                                   class="float-right"><span class="material-icons">edit</span>
-                                </a>
-                            </h5>
-                            <p class="card-text">{{ action.description|safe|truncatechars:150 }}</p>
-                        </div>
-                        <div class="card-footer">
-                            <small class="float-right font-italic">Rating: {{ action.rating }}</small>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-12 col-md-5 col-lg-5">
+                <p class="text-secondary text-center">Projects</p>
+                <ul>
+                    {% for project in selfroom.responsible.all %}
+                    <li>
+                        <a href="{{ project.get_absolute_url }}" class="mr-3">{{ project.title }}</a>
+                        -
+                        <span class="ml-3">[status:
+                            <span class="{{ project.days_to.1 }}">{{ project.days_to.0 }}</span>]
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-12 col-md-7 col-lg-7">
+                <p class="text-secondary text-center">Interactions</p>
+                <ul type="circle">
+                {% for action in selfroom.interaction_set.all %}
+                    <li>
+                        <span class="d-block">
+                            <a href="{% url 'interaction-details' action.project.company.slug action.project.slug action.pk %}">{{ action.description|safe|truncatechars:70 }}</a>
+                            <span class="fs-_8 ml-2">({{ action.rating }})</span>
+                        </span>
+                        <small class="d-block text-muted">[{{ action.get_appeals }}]</small>
+                    </li>
+                {% endfor %}
+                </ul>
             </div>
         </div>
-        {% endfor %}
+
     </main>
 
 {% endblock %}

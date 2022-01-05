@@ -48,8 +48,18 @@
                 {% for company in companies %}
                 <div class="card my-2">
                     <details>
-                        <summary class="card-header">{{ company.title }}
+                        <summary class="card-header position-relative">{{ company.title }}
                             <span class="text-muted">(The contact person: {{ company.contact_person }})</span>
+                            {% if perms.someapp.change_company %}
+                            <a class="ml-3" href="{% url 'update-company' company.slug %}">
+                                <span class="material-icons fs-1">edit</span>
+                            </a>
+                            {% endif %}
+                            {% if perms.someapp.delete_company %}
+                            <a class="m-0 position-absolute delete-btn-company" href="{% url 'delete-company' company.slug %}">
+                                <span class="material-icons fs-1">close</span>
+                            </a>
+                            {% endif %}
                             <cite class="text-warning float-right" style="font-size: 10pt;">
                                 last changed: {{ company.updated_date|date:"d.m.Y" }}
                                 in {{ company.updated_date|time:"H:i" }}</cite></summary>

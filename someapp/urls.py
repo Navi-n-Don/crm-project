@@ -1,6 +1,6 @@
 from django.urls import path, include
 from . import views
-from interactions.views import ActionDetailView, ActionCreateView, ActionUpdate
+from interactions.views import ActionDetailView, ActionCreateView, ActionUpdate, ActionDelete
 
 urlpatterns = [
     path('company-list/', include([
@@ -19,6 +19,7 @@ urlpatterns = [
             path('new-action/', ActionCreateView.as_view(), name='new-action'),
             path('<int:pk>/', ActionDetailView.as_view(), name='interaction-details'),
             path('<int:pk>/update/', ActionUpdate.as_view(), name='update-action'),
+            path('<int:pk>/delete/', ActionDelete.as_view(), name='delete-action'),
         ])),
 
     ])),

@@ -2,12 +2,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.models import Group
-from django.http import request
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-
-from interactions.models import Interaction
 from main import settings
 from users.forms import PersonUpdateForm, PersonCreationForm
 from users.models import Person
@@ -66,13 +63,11 @@ class LogoutView(View):
 class PersonView(LoginRequiredMixin, ListView):
     model = Person
     template_name = "users/cabinet.html"
+    context_object_name = "selfroom"
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['interaction'] = []
-        for action in Interaction.objects.filter(manager_id=self.request.user.id):
-            context['interaction'].append(action)
-        return context
+    def get_queryset(self):
+        queryset = self.request.user
+        return queryset
 
 
 class PersonUpdate(PermissionRequiredMixin, UpdateView):
