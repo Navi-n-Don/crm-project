@@ -39,7 +39,6 @@ class ActionFilter(django_filters.FilterSet):
     o = django_filters.OrderingFilter(
         fields=(
             ('appeals', 'appeals'),
-            ('rating', 'rating'),
             ('created_date', 'created_date'),
         ),
         choices=APPEALS_ORDERING,
@@ -48,4 +47,4 @@ class ActionFilter(django_filters.FilterSet):
 
     class Meta:
         model = Interaction
-        fields = ['appeals', 'rating', 'created_date', ]
+        fields = ['appeals', 'created_date', ]

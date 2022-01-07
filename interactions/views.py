@@ -1,10 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
-from interactions.forms import ActionForm, ActionUpdateForm
-from interactions.models import Interaction, Star
+from django.views.generic.base import View
+from interactions.forms import ActionForm, ActionUpdateForm, LikeForm
+from interactions.models import Interaction, Like
 from someapp.models import Project
 
 
@@ -25,7 +27,6 @@ class ActionCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         project = get_object_or_404(Project, slug=self.kwargs['project_slug'])
         action.project = project
         action.manager = self.request.user
-        action.rating = get_object_or_404(Star, pk=1)
         with transaction.atomic():
             action.save()
         return redirect(reverse_lazy('project-details',
@@ -47,3 +48,17 @@ class ActionDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
         return reverse_lazy('project-details',
                             kwargs={'company_slug': self.kwargs['company_slug'],
                                     "project_slug": self.kwargs['project_slug']})
+
+
+class AddLikeView(View):
+    def post(self, request):
+        form = LikeForm(request.POST)
+        if form.is_valid():
+            Like.objects.update_or_create(
+                who_id=self.request.user.id,
+                action_id=int(request.POST.get("post")),
+                defaults={'like_id': int(request.POST.get("like"))}
+            )
+            return HttpResponse(status=201)
+        else:
+            return HttpResponse(status=400)

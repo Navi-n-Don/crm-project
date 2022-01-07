@@ -1,8 +1,10 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
+from interactions.forms import LikeForm
 from interactions.models import Interaction
 from main.filters import CompanyFilter, ProjectFilter
+from main.utils import single, total
 from .forms import PhoneInlineFormSet, EmailInlineFormSet, ProjectForm, ProjectUpdateForm
 from .models import Company, Project
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
@@ -35,10 +37,8 @@ class CompanyDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CompanyDetailView, self).get_context_data(**kwargs)
-        project = Project.objects.filter(company_id=self.model.objects.get(slug=self.kwargs['slug']).pk)
-        paginator = Paginator(project, 2)
-        page_number = self.request.GET.get('page')
-        context['page_obj'] = paginator.get_page(page_number)
+        paginator = Paginator(Project.objects.filter(company_id=self.model.objects.get(slug=self.kwargs['slug']).pk), 2)
+        context['page_obj'] = paginator.get_page(self.request.GET.get('page'))
         return context
 
 
@@ -59,9 +59,7 @@ class CompanyCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        """
-        Checking the validity of the form data
-        """
+        """Checking the validity of the form data"""
         context = self.get_context_data(form=form)
         formsets = [context['phone'], context['email']]
         count = 0
@@ -97,9 +95,7 @@ class CompanyUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        """
-        Checking the validity of the form data
-        """
+        """Checking the validity of the form data"""
         context = self.get_context_data(form=form)
         formsets = [context['phone'], context['email']]
         for formset in formsets:
@@ -147,6 +143,9 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['rate'] = LikeForm()
+        context['likes'] = single(self.model.objects, self.kwargs['project_slug'], self.request.user)
+        context['total'] = total(self.model.objects, self.kwargs['project_slug'])
         actions = Interaction.objects.filter(project_id=self.model.objects.get(slug=self.kwargs['project_slug']).pk)
         paginator = Paginator(actions, 2)
         page_number = self.request.GET.get('page')

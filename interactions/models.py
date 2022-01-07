@@ -14,8 +14,7 @@ class Interaction(models.Model):
     appeals = models.CharField(max_length=2, choices=APPEALS.choices, default=APPEALS.REQUEST)
     manager = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = RichTextField(config_name='comment_ckeditor')
-    rating = models.ForeignKey('Star', on_delete=models.CASCADE)
-    keyword = models.ManyToManyField('Keyword', related_name='keyword')
+    keyword = models.ManyToManyField('Keyword', related_name='keyword', blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
@@ -23,7 +22,7 @@ class Interaction(models.Model):
         """
         Model metadata of interaction
         """
-        ordering = ('-created_date', '-rating',)
+        ordering = ('-created_date',)
         verbose_name = 'interaction'
         verbose_name_plural = 'interactions'
 
@@ -66,9 +65,34 @@ class Keyword(models.Model):
         return f'{self.title}'
 
 
-class Star(models.Model):
+class Like(models.Model):
     """
-    Model representing a star for rating
+    Model representing a Like
+    """
+    who = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    action = models.ForeignKey(Interaction, on_delete=models.CASCADE)
+    like = models.ForeignKey("Rating", on_delete=models.CASCADE)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """
+        Model metadata of Like
+        """
+        ordering = ('-created_date',)
+        verbose_name = 'like'
+        verbose_name_plural = 'likes'
+
+    def __str__(self) -> str:
+        """
+        String for representing the CommentLike object.
+        """
+        return f'{self.action} - {self.who}'
+
+
+class Rating(models.Model):
+    """
+    Model representing a Rating
     """
     value = models.SmallIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
@@ -76,14 +100,14 @@ class Star(models.Model):
 
     class Meta:
         """
-        Model metadata of star
+        Model metadata of Rating
         """
         ordering = ('-value',)
-        verbose_name = 'star'
-        verbose_name_plural = 'stars'
+        verbose_name = 'rating'
+        verbose_name_plural = 'rating'
 
     def __str__(self) -> str:
         """
-        String for representing a star object.
+        String for representing a Rating object.
         """
         return f'{self.value}'

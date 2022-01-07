@@ -6,6 +6,10 @@
 
 {% load crispy_forms_tags %}
 
+{% block addjs %}
+<script src="{% static 'js/rating.js' %}" defer></script>
+{% endblock %}
+
 {% block title %}
     {{ project.title }}
 {% endblock %}
@@ -67,7 +71,31 @@
                             <small class="d-block mt-3 align-self-start"></small>
                         {% endif %}
                             <h3 class="my-5 text-center">Interactions</h3>
-                            <div>Hello</div>
+                            <div class="position-relative">
+                                <form action="" method="post">
+                                    {% csrf_token %}
+
+                                </form>
+                                <form action="" method="get" class="position-absolute">
+                                    <ul class="list-unstyled">
+                                    {% for action in project.interaction_set.all %}
+                                        {% for keyword in action.keyword.all %}
+                                            <li><buttton type="submit" class="btn-link">dfsd {{ keyword }}</buttton></li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                    </ul>
+                                    <!--
+                                     переменная с ключ.словом, затем форма для добавления
+                                     тех самых ключ.словом (3 - 5)
+                                     после добавления последнего удалить форму
+                                     при удалении последнего вернуть форму для добавления
+                                     все переменные активные
+                                     на каждой переменной фильтр
+                                     расположить списком и прижать к правой части экрана
+                                     форму расположить слева от списка на месте "Hello"
+                                     -->
+                                </form>
+                            </div>
                     </div>
                     <div>
                         {% for interaction in page_obj %}
@@ -86,8 +114,34 @@
                                     <p class="card-text">{{ interaction.description|safe|truncatechars:150 }}</p>
                                 </div>
                                 <div class="card-footer">
-                                    <small class="float-right font-italic">Rating: {{ interaction.rating }}</small>
-                                    <div class="clearfix"></div>
+                                    <form method="post" name="rate{{ interaction.id }}" action="{% url 'add_like' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ interaction.id }}" name="post">
+                                        <span class="like float-right">
+                                        {% for k, v in total.items %}
+                                            {% if interaction.id == k %}
+                                            <span class="total_likes">{{ v }}</span>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if user.id != interaction.manager_id %}
+                                            {% for like in likes %}
+                                                {% if like.action_id == interaction.id %}
+                                                    {% for key, val in rate.fields.like.choices %}
+                                                        {% if key == like.like_id %}
+                                                        <input type="radio" name="like" value="{{ key }}" id="like_{{ key }}_{{ interaction.id }}" checked>
+                                                        <label for="like_{{ key }}_{{ interaction.id }}">{{ key }}</label>
+                                                        {% else %}
+                                                        <input type="radio" name="like" value="{{ key }}" id="like_{{ key }}_{{ interaction.id }}">
+                                                        <label for="like_{{ key }}_{{ interaction.id }}">{{ key }}</label>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        </span>
+                                        <div class="clearfix"></div>
+                                    </form>
                                 </div>
                             </div>
                         </div>

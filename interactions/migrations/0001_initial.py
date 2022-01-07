@@ -31,20 +31,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Star',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.SmallIntegerField(default=0)),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
-                ('updated_date', models.DateTimeField(auto_now=True)),
-            ],
-            options={
-                'verbose_name': 'star',
-                'verbose_name_plural': 'stars',
-                'ordering': ('-value',),
-            },
-        ),
-        migrations.CreateModel(
             name='Interaction',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -55,12 +41,11 @@ class Migration(migrations.Migration):
                 ('keyword', models.ManyToManyField(related_name='keyword', to='interactions.Keyword')),
                 ('manager', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
                 ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='someapp.project')),
-                ('rating', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='interactions.star')),
             ],
             options={
                 'verbose_name': 'interaction',
                 'verbose_name_plural': 'interactions',
-                'ordering': ('-created_date', '-rating'),
+                'ordering': ('-created_date',),
             },
         ),
     ]

@@ -1,6 +1,6 @@
 from django.urls import path, include
 from . import views
-from interactions.views import ActionDetailView, ActionCreateView, ActionUpdate, ActionDelete
+from interactions.views import ActionDetailView, ActionCreateView, ActionUpdate, ActionDelete, AddLikeView
 
 urlpatterns = [
     path('company-list/', include([
@@ -26,4 +26,5 @@ urlpatterns = [
     path('project-list/', include([
         path('', views.ProjectListView.as_view(), name='projects'),
     ])),
+    path('add_like/', AddLikeView.as_view(), name='add_like'),
 ]

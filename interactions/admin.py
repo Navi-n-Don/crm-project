@@ -1,14 +1,14 @@
 from django.contrib import admin
-from interactions.models import Interaction, Star
+from interactions.models import Interaction, Rating, Like
 
 
 @admin.register(Interaction)
 class InteractionAdmin(admin.ModelAdmin):
     readonly_fields = ('created_date', 'updated_date',)
-    list_display = ('appeals', 'description', 'manager', 'project', 'rating',)
+    list_display = ('appeals', 'description', 'manager', 'project',)
     fieldsets = (
         ('General', {
-            'fields': ('appeals', 'description', 'keyword', 'rating',)
+            'fields': ('appeals', 'description', 'keyword',)
         }),
         ('Project', {
             'fields': ('project',)
@@ -22,7 +22,13 @@ class InteractionAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Star)
-class StarAdmin(admin.ModelAdmin):
+@admin.register(Like)
+class CommentLikeAdmin(admin.ModelAdmin):
+    list_display = ['who', 'action', 'like', ]
     readonly_fields = ('created_date', 'updated_date',)
-    list_display = ('value',)
+
+
+@admin.register(Rating)
+class RatingAdmin(admin.ModelAdmin):
+    list_display = ['value', ]
+    readonly_fields = ('created_date', 'updated_date',)
