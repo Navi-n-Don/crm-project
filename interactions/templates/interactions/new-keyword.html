@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Create a New Keyword
+{% endblock %}
+
+{% block content %}
+
+    <main class="container">
+        <div class="row">
+            <h3 class="text-center my-5">New Keyword</h3>
+            <form id="interaction_form" action="" method="post" class="d-block mx-auto my-5">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input type="submit" value="Create" class="btn btn-success my-3 px-5 float-right">
+            </form>
+            <div class="clearfix"></div>
+        </div>
+    </main>
+
+{% endblock %}

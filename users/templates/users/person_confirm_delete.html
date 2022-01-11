@@ -15,7 +15,9 @@
                         <h4 class="text-center">Are you sure you want to delete account "{{ user.username }}"?</h4>
                         <form action="" method="POST">
                             {% csrf_token %}
-                            <input type="submit" value="I'm sure" class="shadow rounded font-weight-bold text-uppercase mt-5 py-2 w-50 btn btn-danger d-block mx-auto">
+                            <input type="submit" value="I'm sure"
+                                   class="shadow rounded font-weight-bold text-uppercase mt-5 py-2 w-50
+                                    btn btn-danger d-block mx-auto">
                         </form>
                     </div>
         </div>

@@ -1,6 +1,7 @@
 import django_filters
-from interactions.models import Interaction
-from main.constants import APPEALS_ORDERING, PROJECT_ORDERING, COMPANY_ORDERING
+from django import forms
+from interactions.models import Interaction, Keyword
+from main.constants import PROJECT_ORDERING, COMPANY_ORDERING
 from someapp.models import Company, Project
 
 
@@ -35,16 +36,15 @@ class ProjectFilter(django_filters.FilterSet):
         fields = ['title', 'begin', 'end', ]
 
 
-class ActionFilter(django_filters.FilterSet):
-    o = django_filters.OrderingFilter(
-        fields=(
-            ('appeals', 'appeals'),
-            ('created_date', 'created_date'),
-        ),
-        choices=APPEALS_ORDERING,
-        empty_label=None
+class Filter(django_filters.FilterSet):
+    keyword = django_filters.ModelMultipleChoiceFilter(
+        field_name='keyword__title',
+        to_field_name='title',
+        widget=forms.CheckboxSelectMultiple,
+        label='Keywords',
+        queryset=Keyword.objects.all()
     )
 
     class Meta:
         model = Interaction
-        fields = ['appeals', 'created_date', ]
+        fields = ['keyword', ]

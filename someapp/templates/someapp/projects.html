@@ -47,21 +47,12 @@
                 <ol class="list-unstyled">
                     {% for project in projects %}
                     <li>
-                        {% now 'Y-m-d' as today %}
-                        {% if project.begin|date:"Y-m-d" > today %}
                         <div class="card border-secondary mb-3 ml-3">
-                            <div class="card-header text-right text-secondary">
-                                Will be started {{ project.begin|date:"d.m.y" }}
-                            </div>
-                        {% elif project.end|date:"Y-m-d" < today %}
-                        <div class="card border-success mb-3 ml-3">
-                            <div class="card-header text-right text-success">Completed</div>
-                        {% else %}
-                        <div class="card border-info mb-3 ml-3">
                             <div class="card-header">
                                 <span class="position-relative">
                                     {% if user.username|cut:" " == project.creator|cut:" " %}
-                                    <a class="m-0 position-absolute delete-btn-project" href="{% url 'delete-project' project.company.slug project.slug %}">
+                                    <a class="m-0 position-absolute delete-btn-project"
+                                       href="{% url 'delete-project' project.company.slug project.slug %}">
                                         <span class="material-icons">close</span>
                                     </a>
                                     <a href="{% url 'update-project' project.company.slug project.slug %}">
@@ -69,9 +60,9 @@
                                     </a>
                                     {% endif %}
                                 </span>
-                                <span class="float-right text-info">In Progress</span>
+                                <span class="float-right {{project.days_to.1}}">{{project.days_to.0}}</span>
                             </div>
-                        {% endif %}
+
                             <div class="card-body text-secondary">
                                 <h5 class="card-title">
                                     <a href="{{ project.get_absolute_url }}">{{ project.title }}</a>
@@ -91,43 +82,7 @@
             <nav class="container mt-5">
                 <ul class="pagination">
                     {% if is_paginated %}
-                        {% if page_obj.has_previous %}
-                        <li class="page-item"><a class="page-link" href="?{% param_replace page=1 %}">First</a></li>
-                        {% else %}
-                        <li class="page-item disabled"><a class="page-link">First</a></li>
-                        {% endif %}
-
-                        {% if page_obj.previous_page_number != 1 %}
-                        <li class="page-item">
-                            <a class="page-link" href="?{% param_replace page=page_obj.previous_page_number %}">
-                                Previous
-                            </a>
-                        </li>
-                        {% else %}
-                        <li class="page-item disabled"><a class="page-link">Previous</a></li>
-                        {% endif %}
-
-                        {% for page_num in page_obj.paginator.page_range %}
-                            {% if page_obj.number == page_num %}
-                            <li class="page-item disabled"><a class="page-link">{{ page_num }}</a></li>
-                            {% else %}
-                            <li class="page-item">
-                                <a class="page-link" href="?{% param_replace page=page_num %}">{{ page_num }}</a>
-                            </li>
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?{% param_replace page=page_obj.next_page_number %}">Next</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?{% param_replace page=paginator.num_pages %}">Last</a>
-                        </li>
-                        {% else %}
-                        <li class="page-item disabled"><a class="page-link">Next</a></li>
-                        <li class="page-item disabled"><a class="page-link">Last</a></li>
-                        {% endif %}
+                        {% include "pagination.html" %}
                     {% endif %}
                 </ul>
             </nav>

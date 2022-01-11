@@ -2,8 +2,6 @@
 
 {% load static %}
 
-{% load templatetags %}
-
 {% load crispy_forms_tags %}
 
 {% block addjs %}
@@ -60,158 +58,124 @@
                 <hr>
 
                 {% if project.interaction_set.all %}
-                    <div class="d-flex justify-content-between align-items-center">
-                        {% if perms.interactions.add_interaction %}
-                            <small class="d-block mt-3 align-self-start">
-                                <a href="{% url 'new-action' project.company.slug project.slug %}">
-                                    + add a new interaction
-                                </a>
-                            </small>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="d-block mt-3 align-self-start">
+                        {% if perms.interactions.add_interaction and project.days_to.0 != 'Completed' %}
+                        <a href="{% url 'new-action' project.company.slug project.slug %}">
+                            + add a new interaction
+                        </a>
                         {% else %}
-                            <small class="d-block mt-3 align-self-start"></small>
+                        <span class="hide">Project Completed</span>
                         {% endif %}
-                            <h3 class="my-5 text-center">Interactions</h3>
-                            <div class="position-relative">
-                                <form action="" method="post">
-                                    {% csrf_token %}
-
-                                </form>
-                                <form action="" method="get" class="position-absolute">
-                                    <ul class="list-unstyled">
-                                    {% for action in project.interaction_set.all %}
-                                        {% for keyword in action.keyword.all %}
-                                            <li><buttton type="submit" class="btn-link">dfsd {{ keyword }}</buttton></li>
-                                        {% endfor %}
-                                    {% endfor %}
-                                    </ul>
-                                    <!--
-                                     переменная с ключ.словом, затем форма для добавления
-                                     тех самых ключ.словом (3 - 5)
-                                     после добавления последнего удалить форму
-                                     при удалении последнего вернуть форму для добавления
-                                     все переменные активные
-                                     на каждой переменной фильтр
-                                     расположить списком и прижать к правой части экрана
-                                     форму расположить слева от списка на месте "Hello"
-                                     -->
-                                </form>
-                            </div>
+                    </small>
+                    <h3 class="my-5 text-center">Interactions</h3>
+                    <div class="position-relative align-self-start keyword-show-panel">
+                        <form method="get">
+                            {{ filterset.form }}
+                            <input type="submit" value="Show" class="btn btn-info px-5 float-right">
+                        </form>
                     </div>
+                </div>
+                <div>
+                    {% for interaction in page_obj %}
                     <div>
-                        {% for interaction in page_obj %}
-                        <div>
-                            <div class="card mb-3 ml-3">
-                                <div class="card-body text-secondary">
-                                    <h5 class="card-title position-relative">
-                                        <a href="{% url 'interaction-details' project.company.slug project.slug interaction.pk %}">{{ interaction.get_appeals }}</a>
-                                        {% if interaction.manager|cut:" " == user.username|cut:" " %}
-                                        <span class="float-right">
-                                            <a href="{% url 'update-action' project.company.slug project.slug interaction.pk %}"><span class="material-icons">edit</span></a>
-                                            <a class="m-0 position-absolute delete-btn-action" href="{% url 'delete-action' project.company.slug project.slug interaction.pk %}"><span class="material-icons">close</span></a>
-                                        </span>
+                        <div class="card mb-3 ml-3">
+                            <div class="card-body text-secondary">
+                                <h5 class="card-title d-flex justify-content-between">
+                                    <a href="
+                                    {% url 'interaction-details' project.company.slug project.slug interaction.pk %}">
+                                        {{ interaction.get_appeals }}
+                                    </a>
+
+                                    {% if interaction.manager|cut:" " == user.username|cut:" " %}
+                                    <span>
+                                        <a href="
+                                        {% url 'update-action' project.company.slug project.slug interaction.pk %}">
+                                            <span class="material-icons edit-to-close-size">edit</span>
+                                        </a>
+                                        <a href="
+                                        {% url 'delete-action' project.company.slug project.slug interaction.pk %}">
+                                            <span class="material-icons">close</span>
+                                        </a>
+                                    </span>
+                                    {% endif %}
+                                </h5>
+                                <p class="card-text">{{ interaction.description|safe|truncatechars:150 }}</p>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between">
+                                <ul class="list-unstyled row mb-0">
+                                    <li class="text-muted px-2">Keywords:</li>
+                                    {% for keyword in interaction.keyword.all %}
+                                    <li class="mr-2">
+                                        <form action="{% url 'filter-keyword' %}" method="get">
+                                            <input id="keyword_everywhere" type="hidden" name="keyword"
+                                                   value="{{ keyword.id }}">
+                                            <label for="keyword_everywhere" class="btn-link pointer"
+                                                   onclick="$(this).parent().submit();">{{ keyword }}</label>
+                                        </form>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                <form method="post" name="rate{{ interaction.id }}" action="{% url 'add_like' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{ interaction.id }}" name="post">
+                                    <span class="like">
+                                    {% for k, v in total.items %}
+                                        {% if interaction.id == k %}
+                                        <span class="total_likes">{{ v }}</span>
                                         {% endif %}
-                                    </h5>
-                                    <p class="card-text">{{ interaction.description|safe|truncatechars:150 }}</p>
-                                </div>
-                                <div class="card-footer">
-                                    <form method="post" name="rate{{ interaction.id }}" action="{% url 'add_like' %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" value="{{ interaction.id }}" name="post">
-                                        <span class="like float-right">
-                                        {% for k, v in total.items %}
-                                            {% if interaction.id == k %}
-                                            <span class="total_likes">{{ v }}</span>
+                                    {% endfor %}
+
+                                    {% if user.id != interaction.manager_id %}
+                                        {% for like in likes %}
+                                            {% if like.action_id == interaction.id %}
+                                                {% for key, val in rate.fields.like.choices %}
+                                                    {% if key == like.like_id %}
+                                                        <input type="radio" name="like" value="{{ key }}"
+                                                               id="like_{{ key }}_{{ interaction.id }}" checked>
+                                                        <label for="like_{{ key }}_{{ interaction.id }}">
+                                                            {{ key }}
+                                                        </label>
+                                                    {% else %}
+                                                        <input type="radio" name="like" value="{{ key }}"
+                                                               id="like_{{ key }}_{{ interaction.id }}">
+                                                        <label for="like_{{ key }}_{{ interaction.id }}">
+                                                            {{ key }}
+                                                        </label>
+                                                    {% endif %}
+                                                {% endfor %}
                                             {% endif %}
                                         {% endfor %}
-
-                                        {% if user.id != interaction.manager_id %}
-                                            {% for like in likes %}
-                                                {% if like.action_id == interaction.id %}
-                                                    {% for key, val in rate.fields.like.choices %}
-                                                        {% if key == like.like_id %}
-                                                        <input type="radio" name="like" value="{{ key }}" id="like_{{ key }}_{{ interaction.id }}" checked>
-                                                        <label for="like_{{ key }}_{{ interaction.id }}">{{ key }}</label>
-                                                        {% else %}
-                                                        <input type="radio" name="like" value="{{ key }}" id="like_{{ key }}_{{ interaction.id }}">
-                                                        <label for="like_{{ key }}_{{ interaction.id }}">{{ key }}</label>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                        </span>
-                                        <div class="clearfix"></div>
-                                    </form>
-                                </div>
+                                    {% else %}
+                                        <span class="no-like"></span>
+                                    {% endif %}
+                                    </span>
+                                    <div class="clearfix"></div>
+                                </form>
                             </div>
                         </div>
-                        {% endfor %}
-
-                        <nav class="container mt-5">
-                            <ul class="pagination">
-
-                                    {% if page_obj.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?{% param_replace page=1 %}">First</a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled"><a class="page-link">First</a></li>
-                                    {% endif %}
-
-                                    {% if page_obj.previous_page_number != 1 %}
-                                    <li class="page-item">
-                                        <a class="page-link"
-                                           href="?{% param_replace page=page_obj.previous_page_number %}">Previous
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled"><a class="page-link">Previous</a></li>
-                                    {% endif %}
-
-                                    {% for page_num in page_obj.paginator.page_range %}
-                                        {% if page_obj.number == page_num %}
-                                        <li class="page-item disabled"><a class="page-link">{{ page_num }}</a></li>
-                                        {% else %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="?{% param_replace page=page_num %}">
-                                                {{ page_num }}
-                                            </a>
-                                        </li>
-                                        {% endif %}
-                                    {% endfor %}
-
-                                    {% if page_obj.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?{% param_replace page=page_obj.next_page_number %}">
-                                            Next
-                                        </a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?{% param_replace page=paginator.num_pages %}">
-                                            Last
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled"><a class="page-link">Next</a></li>
-                                    <li class="page-item disabled"><a class="page-link">Last</a></li>
-                                    {% endif %}
-
-                            </ul>
-                        </nav>
                     </div>
+                    {% endfor %}
+
+                    <nav class="container mt-5">
+                        <ul class="pagination">
+                            {% include "pagination.html" %}
+                        </ul>
+                    </nav>
+                </div>
                 {% else %}
-                    <div>
-                        <h3 class="text-secondary text-center">
-                            There are no interactions available
-                            {% if perms.interactions.add_interaction %}
-                            <small class="d-block text-center mt-3">
-                                <a href="{% url 'new-action' project.company.slug project.slug %}">
-                                    + add a new interaction
-                                </a>
-                            </small>
-                            {% endif %}
-                        </h3>
-                    </div>
+                <div>
+                    <h3 class="text-secondary text-center">
+                        There are no interactions available
+                        {% if perms.interactions.add_interaction %}
+                        <small class="d-block text-center mt-3">
+                            <a href="{% url 'new-action' project.company.slug project.slug %}">
+                                + add a new interaction
+                            </a>
+                        </small>
+                        {% endif %}
+                    </h3>
+                </div>
                 {% endif %}
             </div>
         </div>

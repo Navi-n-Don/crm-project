@@ -4,6 +4,10 @@
 
 {% load templatetags %}
 
+{% block addjs %}
+<script src="{% static 'js/sorting.js' %}"></script>
+{% endblock %}
+
 {% block title %}
     {{ company.title }}
 {% endblock %}
@@ -35,57 +39,73 @@
                     <dt class="col-sm-3 mb-3">Phone numbers:</dt>
                         <dd class="col-sm-9">
                             <ul class="list-unstyled">
-                                {% for number in company.phone_set.all %}
+                            {% for number in company.phone_set.all %}
                                 {% if number.company_id == company.id %}
                                 <li>+38-{{ number }}</li>
                                 {% endif %}
-                                {% endfor %}
+                            {% endfor %}
                             </ul>
                         </dd>
                     <dt class="col-sm-3 mb-3">Email addresses:</dt>
                         <dd class="col-sm-9">
                             <ul class="list-unstyled">
-                                {% for email in company.email_set.all %}
+                            {% for email in company.email_set.all %}
                                 {% if email.company_id == company.id %}
                                 <li>{{ email }}</li>
                                 {% endif %}
-                                {% endfor %}
+                            {% endfor %}
                             </ul>
                         </dd>
                 </dl>
                 <div class="border-bottom text-right fs-_8">
                     created: {{ company.created_date|date:"d.m.Y" }} in {{ company.created_date|time:"H:i" }}
-                    [<span class="text-danger">last changed: {{ company.updated_date|date:"d.m.Y" }}
-                    in {{ company.updated_date|time:"H:i" }}</span>]
+                        [<span class="text-danger">last changed: {{ company.updated_date|date:"d.m.Y" }}
+                            in {{ company.updated_date|time:"H:i" }}</span>]
                 </div>
                 {% if company.project_set.all %}
                     <div class="d-flex justify-content-between align-items-center">
-                        {% if perms.someapp.add_project %}
-                            <small class="d-block mt-3 align-self-start">
-                                <a href="{% url 'new-project' company.slug %}"> + add a new project</a>
-                            </small>
-                        {% else %}
-                            <small class="d-block mt-3 align-self-start"></small>
-                        {% endif %}
-                            <h3 class="my-5 text-center">Projects</h3>
-                            <div>Hello</div>
+                        <small class="d-block mt-3 align-self-start">
+                            {% if perms.someapp.add_project %}
+                            <a href="{% url 'new-project' company.slug %}"> + add a new project</a>
+                            {% endif %}
+                        </small>
+                        <h3 class="my-5 text-center">Projects</h3>
+                        <div class="mt-3 align-self-start">
+                            <form method="get">
+                                <select name="sorting" id="sorting" class="d-block form-control mb-3" onchange="$(this).parent().submit();">
+                                    <option value="none">All projects</option>
+                                    <option value="left">New projects</option>
+                                    <option value="inprogress">In progress projects</option>
+                                    <option value="completed">Completed projects</option>
+                                </select>
+                            </form>
+                        </div>
+                        <script>
+                            let path = '{{ request.get_full_path|cut:request.path }}'.slice(1,);
+                                reqObj = getDict(path);
+                        </script>
                     </div>
                     <div>
                         {% for project in page_obj %}
-                        <div>
                             {% now 'Y-m-d' as today %}
-                                {% if project.begin|date:"Y-m-d" > today %}
-                            <div class="card border-secondary mb-3 ml-3">
+
+                            {% if project.begin|date:"Y-m-d" > today %}
+                            <div class="card border-secondary mb-3">
                                 <div class="card-header text-right text-secondary">
                                     Will be started {{project.begin|date:"d.m.y"}}
                                 </div>
-                                {% elif project.end|date:"Y-m-d" < today %}
-                            <div class="card border-success mb-3 ml-3">
-                                <div class="card-header text-right text-success">Completed</div>
-                                {% else %}
-                            <div class="card border-info mb-3 ml-3">
-                                <div class="card-header text-right text-info">In Progress</div>
-                                {% endif %}
+                            {% elif project.end|date:"Y-m-d" < today %}
+                            <div class="card border-success mb-3">
+                                <div class="card-header text-right text-success">
+                                    Completed
+                                </div>
+                            {% else %}
+                            <div class="card border-info mb-3">
+                                <div class="card-header text-right text-info">
+                                    In Progress
+                                </div>
+                            {% endif %}
+
                                 <div class="card-body text-secondary">
                                     <h5 class="card-title">
                                         <a href="{{ project.get_absolute_url }}">{{ project.title }}</a>
@@ -97,58 +117,11 @@
                                     ${{ project.price }}
                                 </h4>
                             </div>
-                        </div>
                         {% endfor %}
 
                         <nav class="container mt-5">
                             <ul class="pagination">
-
-                                    {% if page_obj.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?{% param_replace page=1 %}">First</a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled"><a class="page-link">First</a></li>
-                                    {% endif %}
-
-                                    {% if page_obj.previous_page_number != 1 %}
-                                    <li class="page-item">
-                                        <a class="page-link"
-                                           href="?{% param_replace page=page_obj.previous_page_number %}">Previous
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled"><a class="page-link">Previous</a></li>
-                                    {% endif %}
-
-                                    {% for page_num in page_obj.paginator.page_range %}
-                                        {% if page_obj.number == page_num %}
-                                        <li class="page-item disabled"><a class="page-link">{{ page_num }}</a></li>
-                                        {% else %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="?{% param_replace page=page_num %}">
-                                                {{ page_num }}
-                                            </a>
-                                        </li>
-                                        {% endif %}
-                                    {% endfor %}
-
-                                    {% if page_obj.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?{% param_replace page=page_obj.next_page_number %}">
-                                            Next
-                                        </a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?{% param_replace page=paginator.num_pages %}">
-                                            Last
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled"><a class="page-link">Next</a></li>
-                                    <li class="page-item disabled"><a class="page-link">Last</a></li>
-                                    {% endif %}
-
+                                {% include "pagination.html" %}
                             </ul>
                         </nav>
                     </div>

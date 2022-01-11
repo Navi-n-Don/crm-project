@@ -20,7 +20,12 @@
                 <form action="" method="post" id="form_company">
                     {% csrf_token %}
                     {{ form.media }}
-                    <p>{{ form|crispy }}</p>
+                    {{ form|crispy }}
+                    <div>
+                        <a class="nav-link" href="{% url 'create-keyword' path.company_slug path.project_slug %}">
+                            + Add
+                        </a>
+                    </div>
 
                     <button type="submit" class="btn btn-success d-block mx-auto mt-4 py-2 px-5">Update</button>
                     <div class="clearfix"></div>

@@ -4,10 +4,6 @@
 
 {% load templatetags %}
 
-{% block addjs %}
-<script src="{% static 'js/sorting.js' %}"></script>
-{% endblock %}
-
 {% block title %}
     Interaction List
 {% endblock %}
@@ -19,48 +15,83 @@
     </noscript>
     <main class="container">
         <div class="row">
-            {% if actions %}
             <div class="col-9 mx-auto col-md-12 col-lg-12">
-                <h1 class="my-5 text-center">Interactions</h1>
-                {% if request.get_full_path|cut:request.path == '' %}
-                <form method="get" id="sort" action="{% url 'interactions' %}?sorting=title" class="text-right my-3">
-                <script>$(document).ready(function() {$('#sort').submit();});</script>
-                {% else %}
-                <form method="get" class="text-right my-3">
-                {% endif %}
-                    <select name="sorting" id="sorting" class="text-secondary p-2 ml-2">
-                    {% for key, value in filterset.field.choices %}
-                    <option value="{{ key }}">{{ value }}</option>
-                    {% endfor %}
-                    </select>
-                </form>
+                <h2 class="my-5 text-center">All projects interactions by keyword:
+                    <span class="ml-2 text-underline">{{ object_list.0.keyword.all.0.title }}</span>
+                </h2>
 
-                <script>
-                    $('#sorting').on('change', function () {
-                        $(this.form).submit();
-                    });
-
-                    let path = '{{ request.get_full_path|cut:request.path }}'.slice(1,);
-                        reqObj = getDict(path);
-                </script>
-
+                {% if object_list %}
                 <div>
-                    {% for action in actions %}
+                    {% for action in object_list %}
                     <div>
                         <div class="card mb-3 ml-3">
                             <div class="card-body text-secondary">
-                                <h5 class="card-title">
-                                    <a href="{% url 'interaction-details' company_slug project.0.slug interaction.pk %}">{{ action.get_appeals }}</a>
+                                <h5 class="card-title d-flex justify-content-between">
+                                    <span>
+                                        <a href="{% url 'interaction-details'
+                                            action.project.company.slug action.project.slug action.pk %}">
+                                            {{ action.get_appeals }}
+                                        </a>
+                                        <span class="fs-_8 ml-3 align-top">
+                                            ["{{ action.project.title|lower }}" - Company:
+                                                {{ action.project.company.title|upper }}]</span>
+                                    </span>
+
                                     {% if action.manager|cut:" " == user.username|cut:" " %}
-                                    <span class="float-right"><span class="material-icons">edit</span></span>
+                                        <span>
+                                            <a href="{% url 'update-action'
+                                                action.project.company.slug action.project.slug action.pk %}">
+                                                <span class="material-icons edit-to-close-size">edit</span>
+                                            </a>
+                                            <a href="{% url 'delete-action'
+                                                action.project.company.slug action.project.slug action.pk %}">
+                                                <span class="material-icons">close</span>
+                                            </a>
+                                        </span>
                                     {% endif %}
                                 </h5>
                                 <p class="card-text">{{ action.description|safe|truncatechars:150 }}</p>
                             </div>
-                            <div class="card-footer">
-                                <small class="float-right font-italic">Rating: {{ action.rating }}</small>
-                                <div class="clearfix"></div>
-                            </div>
+                            <div class="card-footer d-flex justify-content-between">
+                                    <ul class="list-unstyled row mb-0">
+                                        <li class="text-muted px-2">Keywords:</li>
+                                        {% for keyword in action.keyword.all %}
+                                        <li class="mr-2"><a href="" class="btn-link">{{ keyword }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                    <form method="post" name="rate{{ action.id }}" action="{% url 'add_like' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ action.id }}" name="post">
+                                        <span class="like">
+                                        {% for k, v in total.items %}
+                                            {% if action.id == k %}
+                                            <span class="total_likes">{{ v }}</span>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if user.id != action.manager_id %}
+                                            {% for like in likes %}
+                                                {% if like.action_id == action.id %}
+                                                    {% for key, val in rate.fields.like.choices %}
+                                                        {% if key == like.like_id %}
+                                                        <input type="radio" name="like" value="{{ key }}"
+                                                               id="like_{{ key }}_{{ action.id }}" checked>
+                                                        <label for="like_{{ key }}_{{ action.id }}">{{ key }}</label>
+                                                        {% else %}
+                                                        <input type="radio" name="like" value="{{ key }}"
+                                                               id="like_{{ key }}_{{ action.id }}">
+                                                        <label for="like_{{ key }}_{{ action.id }}">{{ key }}</label>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="no-like"></span>
+                                        {% endif %}
+                                        </span>
+                                        <div class="clearfix"></div>
+                                    </form>
+                                </div>
                         </div>
                     </div>
                     {% endfor %}
@@ -69,50 +100,14 @@
                 <nav class="container mt-5">
                     <ul class="pagination">
                         {% if is_paginated %}
-                            {% if page_obj.has_previous %}
-                            <li class="page-item"><a class="page-link" href="?{% param_replace page=1 %}">First</a></li>
-                            {% else %}
-                            <li class="page-item disabled"><a class="page-link">First</a></li>
-                            {% endif %}
-
-                            {% if page_obj.previous_page_number != 1 %}
-                            <li class="page-item">
-                                <a class="page-link" href="?{% param_replace page=page_obj.previous_page_number %}">
-                                    Previous
-                                </a>
-                            </li>
-                            {% else %}
-                            <li class="page-item disabled"><a class="page-link">Previous</a></li>
-                            {% endif %}
-
-                            {% for page_num in page_obj.paginator.page_range %}
-                                {% if page_obj.number == page_num %}
-                                <li class="page-item disabled"><a class="page-link">{{ page_num }}</a></li>
-                                {% else %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?{% param_replace page=page_num %}">{{ page_num }}</a>
-                                </li>
-                                {% endif %}
-                            {% endfor %}
-
-                            {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?{% param_replace page=page_obj.next_page_number %}">Next</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?{% param_replace page=paginator.num_pages %}">Last</a>
-                            </li>
-                            {% else %}
-                            <li class="page-item disabled"><a class="page-link">Next</a></li>
-                            <li class="page-item disabled"><a class="page-link">Last</a></li>
-                            {% endif %}
+                            {% include "pagination.html" %}
                         {% endif %}
                     </ul>
                 </nav>
+                {% else %}
+                <h3 class="text-secondary get-center">There are no selected interactions</h3>
+                {% endif %}
             </div>
-            {% else %}
-            <h3 class="text-secondary get-center">There are no projects available</h3>
-            {% endif %}
 
         </div>
     </main>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from interactions.models import Interaction, Rating, Like
+from interactions.models import Interaction, Rating, Like, Keyword
 
 
 @admin.register(Interaction)
@@ -31,4 +31,10 @@ class CommentLikeAdmin(admin.ModelAdmin):
 @admin.register(Rating)
 class RatingAdmin(admin.ModelAdmin):
     list_display = ['value', ]
+    readonly_fields = ('created_date', 'updated_date',)
+
+
+@admin.register(Keyword)
+class KeywordAdmin(admin.ModelAdmin):
+    list_display = ['title', ]
     readonly_fields = ('created_date', 'updated_date',)

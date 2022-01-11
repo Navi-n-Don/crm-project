@@ -10,7 +10,9 @@
 
 {% block content %}
 
-<noscript class="d-block text-center bg-warning text-light py-3">This page requires Javascript to work correctly.</noscript>
+    <noscript class="d-block text-center bg-warning text-light py-3">
+        This page requires Javascript to work correctly.
+    </noscript>
     <main class="container">
         <div class="row">
             <h3 class="text-center my-5">Post a New Interaction</h3>
@@ -19,6 +21,13 @@
                 {{ form.media }}
                 {{ form.appeals }}
                 {{ form.description }}
+                <span class="d-block mt-3 font-italic">Choose suitable keyword(s):</span>
+                {{ form.keyword }}
+                <div>
+                    <a class="nav-link" href="{% url 'create-keyword' path.company_slug path.project_slug %}">
+                        + Add
+                    </a>
+                </div>
                 <input type="submit" value="Post" class="btn btn-success my-3 px-5 float-right">
             </form>
             <div class="clearfix"></div>

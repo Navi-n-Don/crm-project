@@ -5,7 +5,11 @@ from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
+
+from interactions.models import Interaction
 from main import settings
+from main.utils import total
+from someapp.models import Project
 from users.forms import PersonUpdateForm, PersonCreationForm
 from users.models import Person
 from django.views.generic import ListView, UpdateView, DeleteView, CreateView

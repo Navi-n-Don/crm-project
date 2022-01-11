@@ -16,14 +16,6 @@ PROJECT_ORDERING = [
     ('-end', '9-1 Date End'),
 ]
 
-APPEALS_ORDERING = [
-    ["appeals", "appeals"],
-    ["rating", "rating down"],
-    ["-rating", "rating up"],
-    ["created_date", "older first"],
-    ["-created_date", "newest first"],
-]
-
 
 class APPEALS(models.TextChoices):
     REQUEST = 'RQ', 'Request'

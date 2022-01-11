@@ -1,10 +1,11 @@
+import datetime
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
 from interactions.forms import LikeForm
-from interactions.models import Interaction
-from main.filters import CompanyFilter, ProjectFilter
-from main.utils import single, total
+from interactions.models import Interaction, Keyword, Like
+from main.filters import CompanyFilter, ProjectFilter, Filter
+from main.utils import single, total, filter_status
 from .forms import PhoneInlineFormSet, EmailInlineFormSet, ProjectForm, ProjectUpdateForm
 from .models import Company, Project
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
@@ -37,7 +38,9 @@ class CompanyDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CompanyDetailView, self).get_context_data(**kwargs)
-        paginator = Paginator(Project.objects.filter(company_id=self.model.objects.get(slug=self.kwargs['slug']).pk), 2)
+        projects = filter_status(self.request.GET.get('sorting'), Project.objects.filter(
+            company_id=self.model.objects.get(slug=self.kwargs['slug'])))
+        paginator = Paginator(projects, 2)
         context['page_obj'] = paginator.get_page(self.request.GET.get('page'))
         return context
 
@@ -138,6 +141,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
 
 class ProjectDetailView(LoginRequiredMixin, DetailView):
     model = Project
+    filterset_class = Filter
     template_name = "someapp/project-details.html"
     context_object_name = "project"
 
@@ -146,8 +150,10 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
         context['rate'] = LikeForm()
         context['likes'] = single(self.model.objects, self.kwargs['project_slug'], self.request.user)
         context['total'] = total(self.model.objects, self.kwargs['project_slug'])
-        actions = Interaction.objects.filter(project_id=self.model.objects.get(slug=self.kwargs['project_slug']).pk)
-        paginator = Paginator(actions, 2)
+        context['filterset'] = self.filterset_class(
+            self.request.GET, queryset=Interaction.objects.filter(
+                project_id=self.model.objects.get(slug=self.kwargs['project_slug']).pk))
+        paginator = Paginator(context['filterset'].qs, 2)
         page_number = self.request.GET.get('page')
         context['page_obj'] = paginator.get_page(page_number)
         return context
@@ -174,7 +180,8 @@ class ProjectCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     def get_form_class(self):
         modelform = super().get_form_class()
         modelform.base_fields['creator'].limit_choices_to = {'username': self.request.user}
-        modelform.base_fields['company'].limit_choices_to = {'title': Company.objects.get(slug=self.kwargs.get('slug'))}
+        modelform.base_fields['company'].limit_choices_to = {
+            'title': Company.objects.get(slug=self.kwargs.get('slug'))}
         return modelform
 
 

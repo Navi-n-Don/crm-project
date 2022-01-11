@@ -142,7 +142,9 @@ class Project(models.Model):
         """
         Canonical URL for an object
         """
-        return reverse('project-details', kwargs={'company_slug': slugify(str(self.company)), 'project_slug': self.slug})
+        return reverse('project-details',
+                       kwargs={'company_slug': slugify(str(self.company)),
+                               'project_slug': self.slug})
 
     @property
     def days_to(self) -> list:

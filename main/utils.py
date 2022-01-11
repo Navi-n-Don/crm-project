@@ -1,3 +1,4 @@
+import datetime
 import os
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
@@ -27,19 +28,25 @@ def total(model, kwargs):
     total_action = {}
     total_likes = {}
 
-    if not Like.objects.filter(action_id__project_id=model.get(slug=kwargs).pk):
+    if not Like.objects.filter(action_id__project=model.get(slug=kwargs)):
         for like in Interaction.objects.filter(project_id=model.get(slug=kwargs).pk):
             total_action[like.id] = 0
     else:
         for action in Interaction.objects.filter(project_id=model.get(slug=kwargs).pk):
             total_action[action.id] = 0
 
-        for like in Like.objects.filter(action_id__project_id=model.get(slug=kwargs).pk):
-            total_likes[like.action_id] = 0
-            if like.like_id == 1:
-                total_likes[like.action_id] += 1
-            elif like.like_id == 2:
-                total_likes[like.action_id] += -1
+        for like in Like.objects.filter(action_id__project=model.get(slug=kwargs)):
+            if like.action_id in total_likes:
+                if like.like_id == 1:
+                    total_likes[like.action_id] += 1
+                elif like.like_id == 2:
+                    total_likes[like.action_id] += -1
+            else:
+                if like.like_id == 1:
+                    total_likes[like.action_id] = 1
+                elif like.like_id == 2:
+                    total_likes[like.action_id] = -1
+
     for k, v in total_likes.items():
         if k in total_action:
             total_action[k] = v
@@ -68,3 +75,16 @@ def single(model, kwargs, user):
                     like['action_id'] = item.action_id
 
     return all_likes
+
+
+def filter_status(pole, obj):
+    status = pole
+    today = datetime.date.today()
+    if status == 'left':
+        return obj.filter(begin__gt=today)
+    elif status == 'inprogress':
+        return obj.filter(begin__lt=today, end__gt=today)
+    elif status == 'completed':
+        return obj.filter(end__lt=today)
+    else:
+        return obj

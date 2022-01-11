@@ -1,6 +1,7 @@
 from django.urls import path, include
 from . import views
-from interactions.views import ActionDetailView, ActionCreateView, ActionUpdate, ActionDelete, AddLikeView
+from interactions.views import ActionDetailView, ActionCreateView, ActionUpdate, ActionDelete, AddLikeView, \
+    CreateKeyword, FilterKeywordView
 
 urlpatterns = [
     path('company-list/', include([
@@ -16,7 +17,10 @@ urlpatterns = [
             path('', views.ProjectDetailView.as_view(), name='project-details'),
             path('update/', views.ProjectUpdate.as_view(), name='update-project'),
             path('delete/', views.ProjectDelete.as_view(), name='delete-project'),
-            path('new-action/', ActionCreateView.as_view(), name='new-action'),
+            path('new-action/', include([
+                path('', ActionCreateView.as_view(), name='new-action'),
+                path('new-keyword/', CreateKeyword.as_view(), name='create-keyword'),
+            ])),
             path('<int:pk>/', ActionDetailView.as_view(), name='interaction-details'),
             path('<int:pk>/update/', ActionUpdate.as_view(), name='update-action'),
             path('<int:pk>/delete/', ActionDelete.as_view(), name='delete-action'),
@@ -26,5 +30,6 @@ urlpatterns = [
     path('project-list/', include([
         path('', views.ProjectListView.as_view(), name='projects'),
     ])),
-    path('add_like/', AddLikeView.as_view(), name='add_like'),
+    path('all-projects-keyword/', FilterKeywordView.as_view(), name='filter-keyword'),
+    path('add-like/', AddLikeView.as_view(), name='add_like'),
 ]
