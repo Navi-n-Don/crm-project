@@ -1,5 +1,6 @@
 from django.db import models
 
+# choices for list of companies ordering
 COMPANY_ORDERING = [
     ('title', 'ascending (company name)'),
     ('-title', 'descending (company name)'),
@@ -7,6 +8,7 @@ COMPANY_ORDERING = [
     ('-created_date', 'descending (creation date)'),
 ]
 
+# choices for list of projects ordering
 PROJECT_ORDERING = [
     ('title', 'A-Z'),
     ('-title', 'Z-A'),
@@ -18,6 +20,7 @@ PROJECT_ORDERING = [
 
 
 class APPEALS(models.TextChoices):
+    """Choices for field appeals from interaction object"""
     REQUEST = 'RQ', 'Request'
     LETTER = 'LT', 'Letter'
     WEBSITE = 'WS', 'Website'

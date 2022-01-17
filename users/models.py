@@ -4,9 +4,7 @@ from main.utils import valid_username, update_to
 
 
 class Person(AbstractUser):
-    """
-    Model representing a person
-    """
+    """Model representing a person"""
     username = models.CharField(
         max_length=150,
         unique=True,
@@ -19,20 +17,20 @@ class Person(AbstractUser):
     image = models.ImageField(upload_to=update_to, default='default.png')
 
     class Meta:
-        """
-        Model metadata of person
-        """
         ordering = ('username', '-date_joined',)
         verbose_name = 'Person'
         verbose_name_plural = 'Persons'
 
     def __str__(self) -> str:
-        """
-        String for representing a Person object.
-        """
+        """String for representing a Person object."""
         return f'{self.username}'
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
+        """Custom save new image method
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
         try:
             this = Person.objects.get(id=self.id)
             if this.image != self.image:

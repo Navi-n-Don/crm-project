@@ -4,6 +4,10 @@
 
 {% load crispy_forms_tags %}
 
+{% block addjs %}
+<script src="{% static 'js/showed.js' %}"></script>
+{% endblock %}
+
 {% block title %}
     Sign Up
 {% endblock %}
@@ -27,7 +31,7 @@
                                 </p>
                                 <form method="post">
                                     {% csrf_token %}
-                                    <p>{{ form | crispy }}</p>
+                                    {{ form | crispy }}
                                     <button type="submit" name="submit"
                                             class="btn btn-secondary my-5 w-50 mx-auto d-block">SignUp</button>
                                 </form>

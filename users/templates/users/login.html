@@ -4,11 +4,19 @@
 
 {% load crispy_forms_tags %}
 
+{% block addjs %}
+<script src="{% static 'js/showed.js' %}"></script>
+{% endblock %}
+
 {% block title %}
     Login
 {% endblock %}
 
 {% block content %}
+
+    {% if messages %}
+        {% include "message.html" %}
+    {% endif %}
 
     {% if user.is_authenticated %}
         <meta http-equiv="REFRESH" content="0;url={% url 'companies' %}">
@@ -17,12 +25,18 @@
             <h1 class="text-center mt-5 text-secondary">Login</h1>
             <div class="row">
                 <div class="col-12 col-sm-12 col-lg-6 bg-light mx-auto mt-5"><br>
-                    <form method="post">
+                    <form method="post" class="col-11">
                         {% csrf_token %}
-                        <p>{{ form|crispy }}</p>
-                        <div class="d-flex justify-content-between">
+                        {{ form|crispy }}
+                        <div class="d-flex justify-content-between mb-2">
                             <a href="{% url 'signup' %}" class="btn btn-outline-primary mt-4 py-2 px-5">Sign Up</a>
                             <button type="submit" class="btn btn-primary mt-4 py-2 w-50">Log In</button>
+                        </div>
+                        <div>
+                            <a href="{% url 'password_reset' %}" class="btn-link float-right mr-5">
+                                I Forgot a Password
+                            </a>
+                            <div class="clearfix"></div>
                         </div>
                     </form>
                     <br>

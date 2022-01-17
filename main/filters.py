@@ -6,6 +6,7 @@ from someapp.models import Company, Project
 
 
 class CompanyFilter(django_filters.FilterSet):
+    """Ordering filter for list of companies"""
     o = django_filters.OrderingFilter(
         fields=(
             ('title', 'title'),
@@ -21,6 +22,7 @@ class CompanyFilter(django_filters.FilterSet):
 
 
 class ProjectFilter(django_filters.FilterSet):
+    """Ordering filter for list of projects"""
     o = django_filters.OrderingFilter(
         fields=(
             ('title', 'title'),
@@ -37,6 +39,7 @@ class ProjectFilter(django_filters.FilterSet):
 
 
 class Filter(django_filters.FilterSet):
+    """Filter project interactions by keywords"""
     keyword = django_filters.ModelMultipleChoiceFilter(
         field_name='keyword__title',
         to_field_name='title',

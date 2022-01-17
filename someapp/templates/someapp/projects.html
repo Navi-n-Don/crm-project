@@ -22,12 +22,8 @@
             {% if projects %}
             <div class="col-9 mx-auto col-md-12 col-lg-12">
                 <h1 class="my-5 text-center">Projects</h1>
-                {% if request.get_full_path|cut:request.path == '' %}
-                <form method="get" id="sort" action="{% url 'projects' %}?sorting=title" class="text-right my-3">
-                <script>$(document).ready(function() {$('#sort').submit();});</script>
-                {% else %}
+
                 <form method="get" class="text-right my-3">
-                {% endif %}
                     <select name="sorting" id="sorting" class="text-secondary p-2 ml-2">
                     {% for key, value in filterset.field.choices %}
                     <option value="{{ key }}">{{ value }}</option>
@@ -36,9 +32,7 @@
                 </form>
 
                 <script>
-                    $('#sorting').on('change', function () {
-                        $(this.form).submit();
-                    });
+                    $('#sorting').on('change', function () {$(this.form).submit();});
 
                     let path = '{{ request.get_full_path|cut:request.path }}'.slice(1,);
                         reqObj = getDict(path);

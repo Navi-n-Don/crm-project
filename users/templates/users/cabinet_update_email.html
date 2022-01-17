@@ -1,0 +1,12 @@
+{% load templatetags %}
+
+<h3>Dear {{ user_name }}!</h3>
+
+<p>Your personal data has been changed. The following fields have been modified:</p>
+
+{% for key, val in updated.items %}
+    <p><strong>{{ key|replace:"_| "|title }}:</strong> {{ val }}</p>
+{% endfor %}
+
+<br>
+<p>Go to <a href="{{ link }}">Log In</a></p>

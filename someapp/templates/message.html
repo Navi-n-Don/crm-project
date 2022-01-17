@@ -1,0 +1,17 @@
+<ul class="messages list-unstyled">
+{% for message in messages %}
+    {% if message.tags and message.tags != 'error' %}
+    <li class="bg-{{ message.tags }} py-2 text-light text-center">
+    {% elif message.tags and message.tags == 'error' %}
+    <li class="bg-danger py-2 text-light text-center">
+    {% endif %}
+        {{ message }}
+    </li>
+{% endfor %}
+</ul>
+
+<script>
+    setTimeout(function () {
+        $('.messages').css('opacity', 0);
+    }, 3000);
+</script>

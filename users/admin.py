@@ -4,6 +4,7 @@ from .forms import PersonCreationForm, PersonChangeForm
 from .models import Person
 from django.conf.locale.en import formats as en_formats
 
+# Set date and time format
 en_formats.DATETIME_FORMAT = "d E Y (H:i:s)"
 
 

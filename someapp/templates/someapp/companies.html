@@ -17,6 +17,11 @@
     <noscript class="d-block text-center bg-warning text-light py-3">
         This page requires Javascript to work correctly.
     </noscript>
+
+    {% if messages %}
+        {% include "message.html" %}
+    {% endif %}
+
     <main class="container">
         <div class="row">
             {% if companies %}
@@ -25,12 +30,8 @@
                 {% if perms.someapp.add_company %}
                 <a href="{% url 'new-company' %}"> + Add</a>
                 {% endif %}
-                {% if request.get_full_path|cut:request.path == '' %}
-                <form method="get" id="sort" action="{% url 'companies' %}?sorting=title" class="text-right">
-                <script>$(document).ready(function() {$('#sort').submit();});</script>
-                {% else %}
+
                 <form method="get" class="text-right">
-                {% endif %}
                     <select name="sorting" id="sorting" class="text-secondary p-2 ml-2">
                     {% for key, value in filterset.field.choices %}
                     <option value="{{ key }}">{{ value }}</option>

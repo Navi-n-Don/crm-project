@@ -2,11 +2,10 @@ from django.contrib import admin
 from .models import Company, Phone, Email, Project
 
 
-# Register your models here.
 class PhoneInline(admin.TabularInline):
     model = Phone
     fields = ('phone_number',)
-    can_delete = False
+    can_delete = True
     extra = 1
     max_num = 5
 
@@ -14,7 +13,7 @@ class PhoneInline(admin.TabularInline):
 class EmailInline(admin.TabularInline):
     model = Email
     fields = ('email_address',)
-    can_delete = False
+    can_delete = True
     extra = 1
     max_num = 5
 
