@@ -76,20 +76,16 @@ class CompanyCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         """Checking the validity of the form data"""
         context = self.get_context_data(form=form)
         formsets = [context['phone'], context['email']]
-        count = 0
+        self.object = form.save()
         for formset in formsets:
             if formset.is_valid():
-                response = super().form_valid(form)
                 contacts = formset.save(commit=False)
                 for contact in contacts:
-                    contact.user = self.request.user
                     contact.company = self.object
                     contact.save()
-                count += 1
-                if count == len(formsets):
-                    return response
             else:
                 return super().form_invalid(form)
+        return super().form_valid(form)
 
 
 class CompanyUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -112,33 +108,15 @@ class CompanyUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
     def form_valid(self, form: CompanyForm) -> HttpResponseRedirect:
         """Checking the validity of the form data"""
-        # context = self.get_context_data()
-        # phones = context['phone']
-        # emails = context['email']
-        # with transaction.atomic():
-        #     form.instance.user = self.request.user
-        #     self.object = form.save()
-        #
-        #     if phones.is_valid():
-        #         phones.instance = self.object
-        #         phones.save()
-        #         print(phones.deleted_objects)
-        #
-        #     if emails.is_valid():
-        #         emails.instance = self.object
-        #         emails.save()
-        #
-        # return super(CompanyUpdate, self).form_valid(form)
-
-        context = self.get_context_data()
+        context = self.get_context_data(form=form)
         formsets = [context['phone'], context['email']]
+        self.object = form.save()
         for formset in formsets:
             if formset.is_valid():
                 contacts = formset.save(commit=False)
                 for obj in formset.deleted_objects:
                     obj.delete()
                 for contact in contacts:
-                    contact.user = self.request.user
                     contact.company = self.object
                     contact.save()
             else:
