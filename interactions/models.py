@@ -3,7 +3,7 @@ from ckeditor.fields import RichTextField
 from django.urls import reverse_lazy
 from main import settings
 from main.constants import APPEALS
-from someapp.models import Project
+from someapp.models import Project, Company
 
 
 class Interaction(models.Model):
@@ -24,10 +24,6 @@ class Interaction(models.Model):
     def __str__(self) -> str:
         """String for representing a interaction object."""
         return self.get_appeals()
-
-    def get_absolute_url(self) -> str:
-        """Canonical URL for an object"""
-        return reverse_lazy('interaction-details', args=[str(self.id)])
 
     def get_appeals(self) -> str:
         """Method to get a value of appeals"""

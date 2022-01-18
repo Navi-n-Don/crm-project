@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from main.utils import valid_username, update_to
 
@@ -14,7 +15,9 @@ class Person(AbstractUser):
             'unique': "A user with that username already exists.",
         },
     )
-    image = models.ImageField(upload_to=update_to, default='default.png')
+    image = models.ImageField(upload_to=update_to,
+                              validators=[FileExtensionValidator(allowed_extensions=['png', 'gif', 'jpg', 'jpeg'])],
+                              default='default.png')
 
     class Meta:
         ordering = ('username', '-date_joined',)
